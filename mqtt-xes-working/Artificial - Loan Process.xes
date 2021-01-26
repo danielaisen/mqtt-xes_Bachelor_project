@@ -194,10 +194,10 @@
 	</int>
 	<float key="meta_time:duration_min" value="435.516"/>
 	<trace>
-		<string key="concept:name" value="trace 0"/>
+		<string key="concept:first event name" value="trace 110"/>
 		<event>
 			<date key="time:timestamp" value="2013-04-16T10:08:01.821+02:00"/>
-			<string key="concept:name" value="register application"/>
+			<string key="concept:name" value="register application1"/>
 			<string key="lifecycle:transition" value="complete"/>
 		</event>
 		<event>
@@ -227,7 +227,7 @@
 		</event>
 	</trace>
 	<trace>
-		<string key="concept:name" value="trace 1"/>
+		<string key="concept: second name" value="trace 111"/>
 		<event>
 			<date key="time:timestamp" value="2013-04-16T10:10:01.759+02:00"/>
 			<string key="concept:name" value="register application"/>
@@ -260,7 +260,7 @@
 		</event>
 	</trace>
 	<trace>
-		<string key="concept:name" value="trace 2"/>
+		<string key="concept:name" value="trace 112"/>
 		<event>
 			<date key="time:timestamp" value="2013-04-16T10:15:42.073+02:00"/>
 			<string key="concept:name" value="register application"/>
