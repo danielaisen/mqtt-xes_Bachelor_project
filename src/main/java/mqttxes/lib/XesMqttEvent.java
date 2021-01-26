@@ -1,5 +1,7 @@
 package mqttxes.lib;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -108,5 +110,15 @@ public class XesMqttEvent {
 	public XesMqttEvent removeAttribute(String name, String type) {
 		attributes.get(type).remove(name);
 		return this;
+	}
+	public Date getTime() throws java.text.ParseException { //todo add a check that it is the right format
+		HashMap<String, String> event = attributes.get("event");
+		String time = event.get("time:timestamp");
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		Date myDate = dateFormat.parse(time);
+//		System.out.println(myDate);
+		return myDate;
+
 	}
 }
