@@ -65,8 +65,8 @@ public class Publisher {
 			event.removeEventAttribute("time:timestamp");
 			client.send(Integer.toString(i));
 			client.send(event); //todo create an option to separate between different topics
-			Thread.sleep(millis);
-//			Thread.sleep(diffInMillis);
+//			Thread.sleep(millis);
+			Thread.sleep(diffInMillis);//todo ensure the KeepAlive specification go hand in hand with the sleeping time
 
 			i++;
 

@@ -41,7 +41,8 @@ public class UpdatedPublisher {
         this.client= client.toAsync();
 
     }
-    public void send(String message){
+    public void send(String message){ //todo check if the connection in on prior sending. check if the broker has disconnected
+        //todo how do i specify which metaData is sent? send it
 //        client.publishWith()
 //                .topic("test/topic")
 //                .qos(MqttQos.AT_LEAST_ONCE)
@@ -58,7 +59,8 @@ public class UpdatedPublisher {
 //        client.disconnect();
     }
 
-    public void connect() {
+    public void connect() { //todo set a session expiry interval
+        //todo have a print/check for Unsuccessful reason code / reason Strings
 //        this.client.connectWith().cleanStart(false)
 //                .willPublish()
 //                .topic("test/topic")
@@ -67,7 +69,7 @@ public class UpdatedPublisher {
 //                .retain(true)
 //                .applyWillPublish();
 
-        client.connect();
+        client.connect(); //todo set the client to connect first time with a clean start
     }
     public void disconnect(){
         client.disconnectWith(); //todo the result is Warning:(74, 16) Result of 'Mqtt5AsyncClient.disconnectWith()' is ignored
@@ -81,6 +83,8 @@ public class UpdatedPublisher {
 //        CompletableFuture<Mqtt5ConnAck> connAckFuture = client.connect();
 
         client.publishWith().topic( //todo create a check that there are no wild cards in the message about to be sent
+                //todo The same as wild card Never use spaces in a topic OR
+                // leading forward slash
                 topicBase + "/" +
                         event.getProcessName() + "/" +
                         event.getCaseId() + "/" +
