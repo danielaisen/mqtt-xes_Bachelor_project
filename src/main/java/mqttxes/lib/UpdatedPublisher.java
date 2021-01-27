@@ -28,8 +28,7 @@ public class UpdatedPublisher {
 
                 .serverPort(1883)
                 ;
-//    public NewClientVersion() { //This one works
-//
+
 //    MqttClientBuilder clientBuilder = MqttClient.builder()
 //            .identifier("daniela" + UUID.randomUUID().toString())
 ////                .serverHost("broker.hivemq.com")
@@ -81,7 +80,7 @@ public class UpdatedPublisher {
     public void send(XesMqttEvent event) {
 //        CompletableFuture<Mqtt5ConnAck> connAckFuture = client.connect();
 
-        client.publishWith().topic(
+        client.publishWith().topic( //todo create a check that there are no wild cards in the message about to be sent
                 topicBase + "/" +
                         event.getProcessName() + "/" +
                         event.getCaseId() + "/" +

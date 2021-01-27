@@ -18,7 +18,7 @@ import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
 
 import mqttxes.lib.XesMqttEvent;
-import mqttxes.lib.XesMqttProducer;
+//import mqttxes.lib.XesMqttProducer;
 
 public class Publisher {
 
@@ -64,7 +64,7 @@ public class Publisher {
 
 			event.removeEventAttribute("time:timestamp");
 			client.send(Integer.toString(i));
-			client.send(event);
+			client.send(event); //todo create an option to separate between different topics
 			Thread.sleep(millis);
 //			Thread.sleep(diffInMillis);
 
