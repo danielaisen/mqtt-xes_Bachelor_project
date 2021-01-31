@@ -31,7 +31,7 @@ public class XesMqttProducer extends XesMqttClient {
 		client = Mqtt5Client.builder()
 			.identifier(clientId)
 			.serverHost(brokerHost)
-			.serverPort(8883)
+			.serverPort(1883)
 			.sslWithDefaultConfig()
 			.automaticReconnect()
 				.initialDelay(500, TimeUnit.MILLISECONDS)
@@ -57,9 +57,9 @@ public class XesMqttProducer extends XesMqttClient {
 	 * @throws XesMqttClientNotConnectedException
 	 */
 	public void send(XesMqttEvent event) throws XesMqttClientNotConnectedException {
-		if (!clientIsConnected) {
-			throw new XesMqttClientNotConnectedException();
-		}
+//		if (!clientIsConnected) {
+//			throw new XesMqttClientNotConnectedException();
+//		}
 
 		client.publishWith().topic(
 				topicBase + "/" +

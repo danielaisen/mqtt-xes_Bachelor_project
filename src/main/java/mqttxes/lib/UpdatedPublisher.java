@@ -23,8 +23,8 @@ public class UpdatedPublisher {
         MqttClientBuilder clientBuilder = MqttClient.builder()
 //                .identifier("danielaUser1" + UUID.randomUUID().toString())
                 .identifier("danielaUser1")
-//                .serverHost("broker.hivemq.com")
-                .serverHost("127.0.0.1")
+                .serverHost("broker.hivemq.com")
+//                .serverHost("127.0.0.1")
 
                 .serverPort(1883)
                 ;

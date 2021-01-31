@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import mqttxes.lib.UpdatedPublisher;
+import mqttxes.lib.XesMqttProducer;
 import org.deckfour.xes.extension.std.XConceptExtension;
 import org.deckfour.xes.extension.std.XTimeExtension;
 import org.deckfour.xes.factory.XFactory;
@@ -46,8 +47,7 @@ public class Publisher {
 		Date startDate = event_handler(logName, first).getTime();
 
 		System.out.print("Streaming... ");
-		UpdatedPublisher client = new UpdatedPublisher("pmcep");
-//		XesMqttProducer client = new XesMqttProducer( "localhost", "pmcep");
+		UpdatedPublisher client = new UpdatedPublisher("daniel1");
 
 		System.out.println("start");
 		client.connect();
@@ -67,7 +67,7 @@ public class Publisher {
 			client.send(event); //todo create an option to separate between different topics
 //			Thread.sleep(millis);
 			Thread.sleep(diffInMillis);//todo ensure the KeepAlive specification go hand in hand with the sleeping time
-
+//			client.connect(); //todo not totally sure if this is needed
 			i++;
 
 		}
