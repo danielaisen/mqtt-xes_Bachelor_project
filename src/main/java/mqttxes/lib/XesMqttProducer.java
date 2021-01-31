@@ -10,15 +10,15 @@ import mqttxes.lib.exceptions.XesMqttClientNotConnectedException;
 
 /**
  * Producer client, useful to send new events
- * 
+ *
  * @author Andrea Burattin
  */
 public class XesMqttProducer extends XesMqttClient {
-	
+
 	private MqttQos qos;
-	
+
 	/**
-	 * 
+	 *
 	 * @param brokerHost
 	 * @param topicBase
 	 * @param clientId
@@ -27,11 +27,11 @@ public class XesMqttProducer extends XesMqttClient {
 	public XesMqttProducer(String brokerHost, String topicBase, String clientId, MqttQos qos) {
 		this.topicBase = topicBase;
 		this.qos = qos;
-		
+
 		client = Mqtt5Client.builder()
 			.identifier(clientId)
 			.serverHost(brokerHost)
-			.serverPort(8883)
+			.serverPort(1883)
 			.sslWithDefaultConfig()
 			.automaticReconnect()
 				.initialDelay(500, TimeUnit.MILLISECONDS)
@@ -39,32 +39,32 @@ public class XesMqttProducer extends XesMqttClient {
 				.applyAutomaticReconnect()
 			.buildAsync();
 	}
-	
+
 	/**
 	 * This constructor generates a new client using a random value for the
 	 * client id
-	 * 
+	 *
 	 * @param brokerHost
 	 * @param topicBase
 	 */
 	public XesMqttProducer(String brokerHost, String topicBase) {
 		this(brokerHost, topicBase, UUID.randomUUID().toString(), MqttQos.EXACTLY_ONCE);
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param event
 	 * @throws XesMqttClientNotConnectedException
 	 */
 	public void send(XesMqttEvent event) throws XesMqttClientNotConnectedException {
-		if (!clientIsConnected) {
-			throw new XesMqttClientNotConnectedException();
-		}
-		
+//		if (!clientIsConnected) {
+//			throw new XesMqttClientNotConnectedException();
+//		}
+
 		client.publishWith().topic(
 				topicBase + "/" +
 				event.getProcessName() + "/" +
-				event.getCaseId() + "/" + 
+				event.getCaseId() + "/" +
 				event.getActivityName())
 			.qos(qos)
 			.payload(event.getAttributes().getBytes())
