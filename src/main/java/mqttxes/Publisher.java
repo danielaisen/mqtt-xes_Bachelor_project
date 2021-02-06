@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import mqttxes.lib.UpdatedPublisher;
-import mqttxes.lib.XesMqttProducer;
+//import mqttxes.lib.XesMqttProducer;
 import org.deckfour.xes.extension.std.XConceptExtension;
 import org.deckfour.xes.extension.std.XTimeExtension;
 import org.deckfour.xes.factory.XFactory;

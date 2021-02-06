@@ -41,6 +41,10 @@ public class UpdatedPublisher {
         this.client= client.toAsync();
 
     }
+
+//    public UpdatedPublisher(String topic, String bro)
+
+
     public void send(String message){ //todo check if the connection in on prior sending. check if the broker has disconnected
         //todo how do i specify which metaData is sent? send it
 //        client.publishWith()
