@@ -1,4 +1,4 @@
-//package mqttxes.specificalApI;
+//package requestRespond.specificalApI;
 //
 //import java.util.Arrays;
 //import java.util.List;
@@ -11,7 +11,6 @@
 //import javax.ws.rs.sse.InboundSseEvent;
 //import javax.ws.rs.sse.SseEventSource;
 //
-//import mqttxes.lib.UpdatedPublisher;
 //import org.apache.commons.codec.digest.DigestUtils;
 //import org.json.JSONException;
 //import org.json.JSONObject;
