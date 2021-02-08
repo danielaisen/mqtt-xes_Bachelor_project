@@ -1,5 +1,7 @@
 package requestRespond;
 
+import mqttxes.lib.XesMqttEvent;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,9 +16,11 @@ public class CreateTxtFile {
     public Path path;
     public String name;
     public File file;
+//    XesMqttEvent e;
     public CreateTxtFile(String name){
 
         createFile(name);
+//        XesMqttEvent e = new XesMqttEvent("me", "trying","mybest");
 
     }
 
@@ -36,6 +40,7 @@ public class CreateTxtFile {
                 this.path = Paths.get(name).toAbsolutePath();
                 this.file = myObj;
             }
+
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();

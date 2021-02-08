@@ -39,11 +39,11 @@ public class Publisher {
 		String logName = XConceptExtension.instance().extractName(log);
 		System.out.println("Done");
 
-		List<XTrace> events = log2events(log);
+		List<XTrace> traces = log2events(log);
 		int millis = 10;
 		int deviding_time = Integer.parseInt(args[1]);
 
-		XTrace first = events.get(0);
+		XTrace first = traces.get(0);
 		Date startDate = event_handler(logName, first).getTime();
 
 		System.out.print("Streaming... ");
@@ -52,7 +52,7 @@ public class Publisher {
 		System.out.println("start");
 		client.connect();
 		int i = 0 ;
-		for (XTrace trace : events) { //todo Figure out why it doesnt send the first element
+		for (XTrace trace : traces) { //todo Figure out why it doesnt send the first element
 			System.out.println(i);
 			XesMqttEvent event = event_handler(logName, trace);
 

@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="11">
-      <module name="mqtt" target="" />
+      <module name="mqtt" target="3.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

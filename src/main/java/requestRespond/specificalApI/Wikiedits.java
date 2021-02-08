@@ -19,7 +19,7 @@
 //import mqttxes.lib.XesMqttProducer;
 //import mqttxes.lib.exceptions.XesMqttClientNotConnectedException;
 //
-//public class WikiUpdated {
+//public class Wikiedits {
 //
 //	private static Double eventSent = 0d;
 //	private static List<String> processesToStream = Arrays.asList("enwiki");
@@ -27,12 +27,9 @@
 //	public static void main(String[] args) throws InterruptedException {
 //		String brokerHost = args[0];
 //		while (true) {
-//            XesMqttProducer mqttClient = new XesMqttProducer(brokerHost, "pmcep/wiki");
-////            UpdatedPublisher mqttClient = new UpdatedPublisher("pmcep/wiki");
+//			XesMqttProducer mqttClient = new XesMqttProducer(brokerHost, "pmcep/wiki");
 //
 //			System.out.print("Connecting... ");
-//
-//
 //
 //			Client client = ClientBuilder.newClient();
 //			WebTarget target = client.target("https://stream.wikimedia.org/v2/stream/recentchange");
