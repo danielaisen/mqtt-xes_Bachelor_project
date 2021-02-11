@@ -79,6 +79,7 @@ public class Publisher {
 	private static int time_interval(Date startDate, Date secondDate, int deviding_time) {
 
 		int abs = Math.round(Math.abs(secondDate.getTime() - startDate.getTime())/deviding_time); //todo delete the Math.abs
+		//todo See if an Enum way could be appropriate for deciding on a parameter for max min time
 //todo Warning:(81, 24) 'Math.abs(secondDate.getTime() - startDate.getTime())/deviding_time': integer division in floating-point context
 		return abs;
 	}
