@@ -29,7 +29,7 @@ public class Wikiedits {
 	public static void main(String[] args) throws InterruptedException {
 		String brokerHost = "broker.hivemq.com";//args[0];
 		while (true) {
-			XesMqttProducer mqttClient = new XesMqttProducer(brokerHost, "daniel1/wiki");
+			XesMqttProducer mqttClient = new XesMqttProducer(brokerHost, "daniel1/wiki"); //todo update to the new client
 
 			System.out.print("Connecting... ");
 
@@ -58,7 +58,7 @@ public class Wikiedits {
                             jsonArray.put(jsonObject);
 
 						System.out.println("created a json object: " + data);
-							send(mqttClient, jsonObject, processesToStream);
+							send(mqttClient, jsonObject, processesToStream); //todo update to the new client
 						} catch (JSONException | InterruptedException | XesMqttClientNotConnectedException e) {
 							e.printStackTrace();
 						}
