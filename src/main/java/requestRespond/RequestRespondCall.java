@@ -7,6 +7,7 @@ import org.deckfour.xes.model.XAttribute;
 import org.deckfour.xes.model.XAttributeMap;
 import org.deckfour.xes.model.XTrace;
 import org.deckfour.xes.model.impl.XTraceImpl;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -210,11 +211,11 @@ public class RequestRespondCall {
         return http;
     }
 
-    static List<String> getAndWriteLineByLineToTxt(File outPutFile, String urlIn) throws IOException {
+    static JSONObject getAndWriteLineByLineToTxt(File outPutFile, String urlIn) throws IOException {
         BufferedReader reader;
         String line;
-
-
+        String string = "";
+//        JSONObject jsonObject = new JSONObject();
         XesMqttEvent event = new XesMqttEvent("me", "trying","my best ");
 //        StringBuffer responseContent = new StringBuffer();
 
@@ -234,13 +235,13 @@ public class RequestRespondCall {
                 reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
                 while ((line = reader.readLine()) != null) {
                     event.addEventAttribute("000" + line.substring(1,4), line);
+                    string += line;
                 }
                 reader.close();
             } else {
                 reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
                 while ((line = reader.readLine()) != null) {
-
+                    string += line;
                     event.addEventAttribute( "00000" + lineNumber , line);
                     bufferedWriter.write(lineNumber);
                     lineNumber++;
@@ -259,7 +260,9 @@ public class RequestRespondCall {
         }
         System.out.println("finish writing the data on the file. looking for any Http");
         List<String> http = returnHTTP(outPutFile);
-        return http;
+//        return http;
+        JSONObject jsonObject = new JSONObject(string);
+        return jsonObject;
     }
 
 

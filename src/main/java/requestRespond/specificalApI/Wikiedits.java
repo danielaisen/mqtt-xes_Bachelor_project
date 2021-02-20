@@ -1,6 +1,9 @@
 package requestRespond.specificalApI;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -28,7 +31,9 @@ public class Wikiedits {
 
 	public static void main(String[] args) throws InterruptedException {
 		String brokerHost = "broker.hivemq.com";//args[0];
-		while (true) {
+		System.out.println(new Date(1613852273));
+//		while (true) {
+		for (int i = 0; i <3 ; i++){
 			XesMqttProducer mqttClient = new XesMqttProducer(brokerHost, "daniel1/wiki"); //todo update to the new client
 
 			System.out.print("Connecting... ");
@@ -40,7 +45,7 @@ public class Wikiedits {
 
 			System.out.println("Done!");
 
-
+			System.out.println(jsonArray);
 			source.register(new Consumer<InboundSseEvent>() {
 				@Override
 				public void accept(InboundSseEvent t) {
@@ -57,6 +62,17 @@ public class Wikiedits {
                             JSONObject jsonObject = new JSONObject(data);
                             jsonArray.put(jsonObject);
 
+							int time = (jsonObject.getInt("timestamp"));
+							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+							Date d = new Date(time);
+
+							String myDate = dateFormat.format(d);
+							System.out.println(myDate);
+								jsonObject.remove("timestamp");
+								jsonObject.put("timestamp", myDate);
+								jsonArray.put(jsonObject);
+
+
 						System.out.println("created a json object: " + data);
 							send(mqttClient, jsonObject, processesToStream); //todo update to the new client
 						} catch (JSONException | InterruptedException | XesMqttClientNotConnectedException e) {
@@ -67,6 +83,7 @@ public class Wikiedits {
 					}
 				}
 			});
+			System.out.println(jsonArray);
 			source.open();
 			System.out.print("waiting 10 sec ");
 			Thread.sleep(1000 * 10 * 1); // wait a minutes

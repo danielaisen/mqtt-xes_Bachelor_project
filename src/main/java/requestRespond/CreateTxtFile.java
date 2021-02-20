@@ -30,7 +30,7 @@ public class CreateTxtFile {
 
         try {
             Path path = Paths.get("").toAbsolutePath();
-            File myObj = new File(path+ "\\" +  name +".txt");
+            File myObj = new File(path  +"\\testFolder" + "\\" +  name +".txt");
             if (myObj.createNewFile()) {
                 System.out.println("File created: " + myObj.getName());
                 this.file = myObj;
