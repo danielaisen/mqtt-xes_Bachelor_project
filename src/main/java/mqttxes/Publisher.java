@@ -1,12 +1,12 @@
 package mqttxes;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient;
 import mqttxes.lib.UpdatedPublisher;
 //import mqttxes.lib.XesMqttProducer;
 import org.deckfour.xes.extension.std.XConceptExtension;
@@ -35,16 +35,27 @@ public class Publisher {
 
 		System.out.print("Parsing log... ");
 		XLog log = new XesXmlGZIPParser(factory).parse(new File(args[0])).get(0);
-		System.out.println("here");
+
 		String logName = XConceptExtension.instance().extractName(log);
+
+		logName = UpdatedPublisher.containsWildCards(logName);
+
 		System.out.println("Done");
 
 		List<XTrace> traces = log2events(log);
-		int millis = 10;
-		int deviding_time = Integer.parseInt(args[1]);
 
-		XTrace first = traces.get(0);
-		Date startDate = event_handler(logName, first).getTime();
+
+
+		XTrace firstTrace = traces.get(0);
+		Date startDate = event_handler(logName, firstTrace).getTime();
+		XTrace lastTrace = traces.get(traces.size()-1);
+
+        Date lastDate = event_handler(logName, lastTrace).getTime();;
+//        int diffInMillis2 = time_interval(startDate, lastDate, dividingTime);
+//        System.out.println(diffInMillis2 + "/n");
+        int wishedInterval = Integer.parseInt(args[1]);
+
+        float dividingTime = wishedTime(wishedInterval, startDate, lastDate);
 
 		System.out.print("Streaming... ");
 		UpdatedPublisher client = new UpdatedPublisher("daniel1");
@@ -58,7 +69,7 @@ public class Publisher {
 
 			Date secondDate = event.getTime();
 //			System.out.println(secondDate);
-			int diffInMillis = time_interval(startDate, secondDate, deviding_time);
+			int diffInMillis = time_interval(startDate, secondDate, dividingTime);
 			startDate = secondDate;
 			System.out.println(diffInMillis);
 
@@ -76,9 +87,42 @@ public class Publisher {
 
 	}
 
-	private static int time_interval(Date startDate, Date secondDate, int deviding_time) {
+    private static float wishedTime(int wishedInterval, Date startDate, Date lastDate) throws ParseException {
+        System.out.println("The wished time interval for publishing the whole log data is "+ wishedInterval + " minutes. ");
+        long timeInMilliSeconds = lastDate.getTime() - startDate.getTime();
+        long timeSeconds = timeInMilliSeconds / 1000;
+        long timeMinutes = timeSeconds / 60;
+        long timeHours = timeMinutes / 60;
+        long timeDays = timeHours / 24;
+        String time;
+        if (timeDays > 50) {
+            long month = (long) (timeDays/30.436875);
+            timeDays = (long)  (timeDays % 30.436875);
+            time = "The original log is about: " + month + " months, and " + timeDays + " days."; //, " + hours % 24 + ": hours, " + minutes % 60 + ": minutes, and " + seconds % 60 + ": seconds ";
+        }
+        else{
+            time = timeDays + " days, " + timeHours % 24 + " hours, " + timeMinutes % 60 + " minutes, and " + timeSeconds % 60 + " seconds";
+        }
 
-		int abs = Math.round(Math.abs(secondDate.getTime() - startDate.getTime())/deviding_time); //todo delete the Math.abs
+        float originalTimeInterval =  lastDate.getTime() - startDate.getTime();
+        float wishedIntervalMilliseconds = wishedInterval * 60000;
+        float dividingTime =  (originalTimeInterval/wishedIntervalMilliseconds);
+
+
+        String message = "To receive the wished time interval the original time between the event will be divided by: " + dividingTime;
+        System.out.println(time);
+        System.out.println(message);
+//        if (originalTimeInterval / dividingTime != wishedIntervalMilliseconds) {
+//            System.out.print(originalTimeInterval / dividingTime+ " ");
+//            System.out.println(wishedIntervalMilliseconds);
+//            System.exit(100);
+//        }
+	    return dividingTime;
+    }
+
+    private static int time_interval(Date startDate, Date secondDate, float dividingTime) {
+
+		int abs = Math.round(Math.abs(secondDate.getTime() - startDate.getTime())/dividingTime); //todo delete the Math.abs
 		//todo See if an Enum way could be appropriate for deciding on a parameter for max min time
 //todo Warning:(81, 24) 'Math.abs(secondDate.getTime() - startDate.getTime())/deviding_time': integer division in floating-point context
 		return abs;
@@ -97,7 +141,7 @@ public class Publisher {
 	private static List<XTrace> log2events(XLog log) throws Exception { //todo Warning:(96, 58) Exception 'java.lang.Exception' is never thrown in the method
 		System.out.print("Parsing the events for streaming... ");
 		List<XTrace> events = new LinkedList<XTrace>(); //todo Warning:(98, 40) Explicit type argument XTrace can be replaced with <>
-		for(XTrace trace : log) {
+        for(XTrace trace : log) {
 			for (XEvent event: trace) {
 				XTrace t = factory.createTrace(trace.getAttributes());
 				t.add(event);

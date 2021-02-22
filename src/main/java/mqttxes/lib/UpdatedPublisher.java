@@ -42,6 +42,22 @@ public class UpdatedPublisher {
 
     }
 
+    public static String containsWildCards(String string) {
+        for (int i = 0; i < string.length(); i++) {
+            if (string.charAt(i) == '+' ||
+                    string.charAt(i) == '#' ||
+                    string.charAt(i) == '$') {
+                System.out.println();
+                System.out.println("found wild Cards!!! ");
+                System.out.println();
+            }
+        }
+        string = string.replace("+"," PLUS ");
+        string = string.replace("#"," NUMBER-SIGN ");
+        string = string.replace("$"," DOLLAR-SIGN ");
+        return string;
+    }
+
 //    public UpdatedPublisher(String topic, String bro)
 
 
@@ -85,14 +101,17 @@ public class UpdatedPublisher {
 
     public void send(XesMqttEvent event) {
 //        CompletableFuture<Mqtt5ConnAck> connAckFuture = client.connect();
+        String caseID = containsWildCards(event.getCaseId());
 
+        String processName = containsWildCards(event.getProcessName());
+        String activityName = containsWildCards(event.getActivityName());
         client.publishWith().topic( //todo create a check that there are no wild cards in the message about to be sent
                 //todo The same as wild card Never use spaces in a topic OR
                 // leading forward slash
                 topicBase + "/" +
-                        event.getProcessName() + "/" +
-                        event.getCaseId() + "/" +
-                        event.getActivityName())
+                        processName + "/" +
+                        caseID + "/" +
+                        activityName)
 //                .qos(qos)
                 .payload(event.getAttributes().getBytes())
                 .send();
