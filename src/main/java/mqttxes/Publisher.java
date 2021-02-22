@@ -95,6 +95,7 @@ public class Publisher {
         long timeHours = timeMinutes / 60;
         long timeDays = timeHours / 24;
         String time;
+
         if (timeDays > 50) {
             long month = (long) (timeDays/30.436875);
             timeDays = (long)  (timeDays % 30.436875);
@@ -107,7 +108,6 @@ public class Publisher {
         float originalTimeInterval =  lastDate.getTime() - startDate.getTime();
         float wishedIntervalMilliseconds = wishedInterval * 60000;
         float dividingTime =  (originalTimeInterval/wishedIntervalMilliseconds);
-
 
         String message = "To receive the wished time interval the original time between the event will be divided by: " + dividingTime;
         System.out.println(time);
@@ -122,9 +122,9 @@ public class Publisher {
 
     private static int time_interval(Date startDate, Date secondDate, float dividingTime) {
 
-		int abs = Math.round(Math.abs(secondDate.getTime() - startDate.getTime())/dividingTime); //todo delete the Math.abs
-		//todo See if an Enum way could be appropriate for deciding on a parameter for max min time
-//todo Warning:(81, 24) 'Math.abs(secondDate.getTime() - startDate.getTime())/deviding_time': integer division in floating-point context
+        long realTimeDifference = secondDate.getTime() - startDate.getTime();
+        int abs = Math.round(Math.abs(realTimeDifference)/dividingTime);
+
 		return abs;
 	}
 
@@ -138,7 +138,7 @@ public class Publisher {
 		return event;
 	}
 
-	private static List<XTrace> log2events(XLog log) throws Exception { //todo Warning:(96, 58) Exception 'java.lang.Exception' is never thrown in the method
+	private static List<XTrace> log2events(XLog log) {
 		System.out.print("Parsing the events for streaming... ");
 		List<XTrace> events = new LinkedList<XTrace>(); //todo Warning:(98, 40) Explicit type argument XTrace can be replaced with <>
         for(XTrace trace : log) {
