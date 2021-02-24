@@ -111,7 +111,7 @@ public class RejsePlanCall {
             if (keys.equals("Stop")) {
                 JSONArray stops = journeyDetail.getJSONArray("Stop");
                 arrangeStopData(stops);
-                stopsObject.put("Type", "Event");
+                stopsObject.put("XES_Type", "Event");
                 stopsObject.put("Stops", stops);
             }
             else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
@@ -121,6 +121,7 @@ public class RejsePlanCall {
             }
         }
         JSONObject traceObject = new JSONObject(traceInfo);
+        traceObject.put("XES_Type", "Trace");
         objects.add(traceObject);
         objects.add(stopsObject);
         return objects;
