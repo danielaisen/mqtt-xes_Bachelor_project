@@ -50,18 +50,6 @@ public class ClientRR {
 
     public static String parseRejsePlanJourneyDetails(String responseBody) {
 
-//        String respond = deleteFirstRow(responseBody);
-//
-//        JSONObject one = new JSONObject(respond);
-
-//        JSONArray events = new JSONArray(respond);
-//        for (int i = 0; i < events.length(); i++) {
-//            JSONObject eventJSON = event.getJSONObject(i);
-//            int id = eventJSON.getInt("id");
-//            String title = eventJSON.getString("name");
-//            System.out.println(id + " " + title );
-//        }
-//                    int JourneyLine = one.getInt("JourneyLine");
 
         String refinedRespond = deleteFirstChar(responseBody);
         System.out.println(refinedRespond);
@@ -74,56 +62,28 @@ public class ClientRR {
         List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
         System.out.println(namesJourneyDetail); //todo delete this print
         JSONArray tripDetails = new JSONArray();
-        JSONObject traceObject = new JSONObject();
+
         HashMap<String, String> traceInfo = new HashMap<>();
-        HashMap<String, String> traceInfo2 = new HashMap<>();
         JSONObject stopsObject = new JSONObject();
-        stopsObject.put("time:timestamp", timestamp);
+
         for (String keys : journeyDetail.keySet()) {
             if (keys.equals("Stop")) {
                 JSONArray stops = journeyDetail.getJSONArray("Stop");
                 arrangeStopData(stops);
+                stopsObject.put("time:timestamp", timestamp);
                 stopsObject.put("Type", "Event");
                 stopsObject.put("Stops", stops);
             }
             else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
             else {
                 Object tempObject = journeyDetail.get(keys);
-                retrieveInformationFromObject(keys, tempObject, traceInfo2);
-                if (tempObject instanceof JSONArray) {
-                    JSONArray jsonArray = (JSONArray) tempObject;
-                    for (Object object : jsonArray) {
-                        JSONObject jsonObject = (JSONObject) object;
-                        for (String key : jsonObject.keySet()) {
-                            if (jsonObject.get(key) instanceof String){
-                                if (!(traceInfo.containsKey(key) && traceInfo.get(key).equals(jsonObject.get(key))))  {
-                                    traceInfo.put(key, String.valueOf(jsonObject.get(key)));
-                                }
-                            }
-                            else{
-                                Object a = jsonObject.get(key);
-                                a.getClass();
-                            }
-
-                        }
-                    }
-                }
-                if (tempObject instanceof JSONObject) {
-                    JSONObject jsonObject = (JSONObject) tempObject;
-                    for (String key : (jsonObject.keySet())) {
-                        if (!traceInfo.containsKey(key)) {
-                            traceInfo.put(key, String.valueOf(jsonObject.get(key)));
-                        }
-                    }
-                }
+                retrieveInformationFromObject(keys, tempObject, traceInfo);
             }
-            System.out.println(traceInfo.equals(traceInfo2));
         }
-
-
-        tripDetails.put(traceInfo2);
+        traceInfo.put("time:timestamp", timestamp);
+        JSONObject traceObject = new JSONObject(traceInfo);
+        tripDetails.put(traceObject);
         tripDetails.put(stopsObject);
-
 
 
         CreateTxtFile file = new CreateTxtFile("TryingToJSON");
@@ -169,8 +129,6 @@ public class ClientRR {
                 }
                 else {
                     retrieveInformationFromObject(key, jsonObject.get(key), traceInfo);
-                    System.out.println("\n inside the JSON object found" + jsonObject.get(key).getClass());
-                    System.out.println();
                 }
             }
         }
@@ -185,17 +143,21 @@ public class ClientRR {
 
         }
         else if (original instanceof ArrayList) {
-
+            System.out.println("\n inside the retrieveInformationFromObject object found" + original.getClass());
+            System.out.println();
+            System.exit(1001);
         }
         else if (original instanceof HashMap) {
+            System.out.println("\n inside the retrieveInformationFromObject object found" + original.getClass());
+            System.out.println();
+            System.exit(1002);
 
         }
         else{
             System.out.println("\n error has occur in retrieveInformationFromObject method");
             System.out.println(original.getClass() + "has been found instead");
+            System.exit(1003);
         }
-
-
     }
 
     private static void arrangeStopData(JSONArray stops) {
@@ -255,9 +217,6 @@ public class ClientRR {
             stop.put("daysDepartureDiff", daysDepartureDiff);
             stop.put("departureDiff", departureDiff);
         }
-
-
-
     }
 
     /*
