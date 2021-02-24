@@ -24,44 +24,85 @@ import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class ClientRR {
+public class RejsePlanCall {
+
+    public static void main(String[] args) throws InterruptedException {
+        JSONArray tripDetails = new JSONArray();
+//        String firstRequest = mainClientRR("http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=673050%2F236849%2F801108%2F176208%2F86%3Fdate%3D24.02.21%26format%3Djson");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        String timestamp = dateFormat.format(new Date());
+
+        String uri;
+        if (args.length > 0) {
+            uri = args[0];
+        } else {
+            uri = "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=789222%2F284240%2F155520%2F185315%2F86%3Fdate%3D24.02.21%26format%3Djson";
+        }
+        String request = mainClientRR(uri);
 
 
-    public static void mainClientRR(String uri) {
+
+        for (int i = 0; i < 2; i++) {
+                       ArrayList<JSONObject> stopAndTrace = parseRejsePlanReturnStopsAndTrace(request);
+            for (JSONObject jsonObject : stopAndTrace) {
+
+//                if (jsonObject.get("Type").equals("Trace")) {
+//
+//                    continue;
+//                }
+                jsonObject.put("time:timestamp", timestamp);
+                tripDetails.put(jsonObject);
+
+
+            }
+            Thread.sleep(4 *60 * 1000 ); //4 min
+
+        }
+
+        createFileWithJSON(tripDetails);
+    }
+
+    public static String mainClientRR(String uri) {
+
         System.out.println("getting the information from: \n" +  uri + "\n");
-
+        JSONArray tripDetails = new JSONArray();
         //method 2: java.net.http.HttpClient
 
 //    String uri = "http://jsonplaceholder.typicode.com/posts";
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(uri)).build();
 
-        client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        String s = client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
-                .thenApply(ClientRR::parseRejsePlanJourneyDetails)
+//                .thenApply(RejsePlanCall::parseRejsePlanJourneyDetails)
 //                .thenAccept(System.out::println)
                 .join();
+
+        System.out.println(s); //todo delete this print
+
+        return s;
     }
 
 
-    public static String parseRejsePlanJourneyDetails(String responseBody) {
-
+    public static ArrayList<JSONObject> parseRejsePlanReturnStopsAndTrace(String responseBody) {
+        ArrayList<JSONObject> objects = new ArrayList<JSONObject>();
 
         String refinedRespond = deleteFirstChar(responseBody);
         System.out.println(refinedRespond);//todo delete this print
 
         JSONObject mainJSONobject = new JSONObject(refinedRespond);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        String timestamp = dateFormat.format(new Date());
+
 
         JSONObject journeyDetail = mainJSONobject.getJSONObject("JourneyDetail");
         List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
         System.out.println(namesJourneyDetail); //todo delete this print
-        JSONArray tripDetails = new JSONArray();
+
 
         HashMap<String, String> traceInfo = new HashMap<>();
         JSONObject stopsObject = new JSONObject();
@@ -70,7 +111,6 @@ public class ClientRR {
             if (keys.equals("Stop")) {
                 JSONArray stops = journeyDetail.getJSONArray("Stop");
                 arrangeStopData(stops);
-                stopsObject.put("time:timestamp", timestamp);
                 stopsObject.put("Type", "Event");
                 stopsObject.put("Stops", stops);
             }
@@ -80,13 +120,14 @@ public class ClientRR {
                 retrieveInformationFromObject(keys, tempObject, traceInfo);
             }
         }
-        traceInfo.put("time:timestamp", timestamp);
         JSONObject traceObject = new JSONObject(traceInfo);
-        tripDetails.put(traceObject);
-        tripDetails.put(stopsObject);
+        objects.add(traceObject);
+        objects.add(stopsObject);
+        return objects;
+    }
 
-
-        CreateTxtFile file = new CreateTxtFile("TryingToJSON");
+    private static void createFileWithJSON(JSONArray tripDetails) {
+        CreateTxtFile file = new CreateTxtFile("rejse3loops");
 
         BufferedWriter bufferedWriter;
         try {
@@ -97,10 +138,6 @@ public class ClientRR {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-        return null;
-
     }
 
     private static void retrieveInformationFromObject(String keys, Object original, HashMap<String, String> traceInfo) {
@@ -118,7 +155,7 @@ public class ClientRR {
         else if (original instanceof JSONObject) {
             JSONObject jsonObject = (JSONObject) original;
             for (String key : jsonObject.keySet()) {
-                    retrieveInformationFromObject(key, jsonObject.get(key), traceInfo);
+                retrieveInformationFromObject(key, jsonObject.get(key), traceInfo);
 
             }
         }
