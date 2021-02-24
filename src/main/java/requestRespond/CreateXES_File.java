@@ -63,8 +63,6 @@ public class CreateXES_File {
         }
 
 
-    System.out.println("didi it work?");
-
 //    }
     }
 
