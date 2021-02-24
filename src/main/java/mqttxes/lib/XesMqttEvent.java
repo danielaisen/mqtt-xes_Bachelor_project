@@ -115,9 +115,17 @@ public class XesMqttEvent {
 		HashMap<String, String> event = attributes.get("event");
 		String time = event.get("time:timestamp");
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-		Date myDate = dateFormat.parse(time);
-//		System.out.println(myDate);
+		Date myDate;
+		if (time.length() == 29) {
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+			dateFormat.parse(time);
+			myDate = dateFormat.parse(time);
+		}
+		else{
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+			dateFormat.parse(time);
+			myDate = dateFormat.parse(time);
+		}
 		return myDate;
 
 	}
