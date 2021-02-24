@@ -1,6 +1,7 @@
 package requestRespond;
 
 import org.json.JSONObject;
+import requestRespond.specificalApI.RejsePlanCall;
 
 import java.util.List;
 
@@ -48,6 +49,8 @@ public class RequestRespondMain {
 
 //        ClientRR.mainClientRR(urlList.get(2));
         RejsePlanCall.main(new String[]{urlList.get(2)});
+
+
         RequestRespondCall.getAndWriteLineByLineToTxt(new CreateTxtFile("forWiki").file, wiki);
 
 

@@ -2,7 +2,7 @@
  * @author Daniel Max Aisen (s171206)
  **/
 
-package requestRespond;
+package requestRespond.specificalApI;
 
 
 //import java.net.URI;
@@ -13,6 +13,7 @@ package requestRespond;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import requestRespond.CreateTxtFile;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
