@@ -46,10 +46,11 @@ public class RejsePlanCall {
             uri = "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=789222%2F284240%2F155520%2F185315%2F86%3Fdate%3D24.02.21%26format%3Djson";
         }
         String request = mainClientRR(uri);
+        JSONObject logDetails = new JSONObject();
+        logDetails.put("time:timestamp", timestamp);
+        logDetails.put("XES_Type", "Log");
 
-
-
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
                        ArrayList<JSONObject> stopAndTrace = parseRejsePlanReturnStopsAndTrace(request);
             for (JSONObject jsonObject : stopAndTrace) {
 
@@ -61,11 +62,18 @@ public class RejsePlanCall {
                 tripDetails.put(jsonObject);
             }
             int minutes = 15;
-            Thread.sleep( minutes *60 * 1000 );
+//            Thread.sleep( minutes *60 * 1000 );
 
         }
 
+        logDetails.put("XES_trace", tripDetails);
+        saveToJSON_file("JSON_file_try04",logDetails);
         createFileWithJSON(tripDetails);
+    }
+
+    private static void saveToJSON_file(String name, JSONObject logDetails) {
+
+        CreateTxtFile.createFileToJSON(name,logDetails);
     }
 
     public static String mainClientRR(String uri) {
