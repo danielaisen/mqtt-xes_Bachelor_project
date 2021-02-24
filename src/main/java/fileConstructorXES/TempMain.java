@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -25,10 +26,6 @@ public class TempMain {
         JSONObject jsonObject = new JSONObject();
         Path path = Paths.get("").toAbsolutePath();
 
-        File folder = new File(String.valueOf(path));
-        File[] listOfFiles = folder.listFiles();
-        System.out.println(listOfFiles);
-
         try (FileReader reader = new FileReader(path  +"\\testFolder" + "\\"  + "JSON_file_try04.json")){
             Object object = jsonParser.parse(reader);
             jsonObject = (JSONObject) object;
@@ -37,7 +34,6 @@ public class TempMain {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         new CreateXES_File("file", jsonObject);
 

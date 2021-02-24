@@ -47,8 +47,8 @@ public class RejsePlanCall {
         }
         String request = mainClientRR(uri);
         JSONObject logDetails = new JSONObject();
-        logDetails.put("time:timestamp", timestamp);
-        logDetails.put("XES_Type", "Log");
+//        logDetails.put("time:timestamp", timestamp);
+//        logDetails.put("XES_Type", "Log");
 
         for (int i = 0; i < 1; i++) {
 
@@ -122,7 +122,7 @@ public class RejsePlanCall {
                 JSONArray stops = journeyDetail.getJSONArray("Stop");
                 arrangeStopData(stops);
                 stopsObject.put("XES_Type", "Events");
-                stopsObject.put("Stops", stops);
+                stopsObject.put("Event", stops);
             }
             else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
             else {

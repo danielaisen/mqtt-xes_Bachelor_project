@@ -141,6 +141,8 @@ public class XLogHelper {
         return trace;
     }
 
+
+
     /**
      * This method creates a new {@link XEvent} referring to the given activity
      * name, occurred at the given time. The event is added to the given trace,
