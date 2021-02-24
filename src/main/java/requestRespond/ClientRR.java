@@ -24,6 +24,7 @@ import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -64,23 +65,26 @@ public class ClientRR {
 
         String refinedRespond = deleteFirstChar(responseBody);
         System.out.println(refinedRespond);
-        JSONObject two = new JSONObject(refinedRespond);
 
-        JSONObject journeyDetail = two.getJSONObject("JourneyDetail");
+        JSONObject mainJSONobject = new JSONObject(refinedRespond);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        String timestamp = dateFormat.format(new Date());
+
+        JSONObject journeyDetail = mainJSONobject.getJSONObject("JourneyDetail");
         List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
         System.out.println(namesJourneyDetail); //todo delete this print
         JSONArray tripDetails = new JSONArray();
         JSONObject traceObject = new JSONObject();
         HashMap<String, String> traceInfo = new HashMap<>();
         HashMap<String, String> traceInfo2 = new HashMap<>();
+        JSONObject stopsObject = new JSONObject();
+        stopsObject.put("time:timestamp", timestamp);
         for (String keys : journeyDetail.keySet()) {
             if (keys.equals("Stop")) {
                 JSONArray stops = journeyDetail.getJSONArray("Stop");
                 arrangeStopData(stops);
-                JSONObject stopsObject = new JSONObject();
                 stopsObject.put("Type", "Event");
                 stopsObject.put("Stops", stops);
-                tripDetails.put(stopsObject);
             }
             else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
             else {
@@ -103,7 +107,6 @@ public class ClientRR {
 
                         }
                     }
-
                 }
                 if (tempObject instanceof JSONObject) {
                     JSONObject jsonObject = (JSONObject) tempObject;
@@ -118,18 +121,8 @@ public class ClientRR {
         }
 
 
-
-
-
-//        String namesStops = stops.toString();
-//        System.out.println(namesStops);
-//        JSONObject stop1 = stops.getJSONObject(0);
-//        JSONObject stop2 = stops.getJSONObject(1);
-//        Set<String> sStop2 = stop2.keySet();
-
-//        System.out.println("stop"  + " " + stop1);
-//        System.out.println("stop"  + " " + sStop2);
-
+        tripDetails.put(traceInfo2);
+        tripDetails.put(stopsObject);
 
 
 
@@ -156,7 +149,7 @@ public class ClientRR {
             if (traceInfo.containsKey(keys)) {
                 if (!traceInfo.get(keys).equals(original)) {
                     traceInfo.put(keys + "_addition", (String) original);
-                }
+                }else { } //do nothing
             }
             else{
                 traceInfo.put(keys, (String) original);
@@ -171,8 +164,7 @@ public class ClientRR {
                         if (!traceInfo.get(key).equals(jsonObject.get(key))) {
                             traceInfo.put(key + "_addition", String.valueOf(jsonObject.get(key)));
                         }
-                        else {
-                        }
+                        else { } //do nothing
                     }
                 }
                 else {
