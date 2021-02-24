@@ -59,10 +59,9 @@ public class RejsePlanCall {
 //                }
                 jsonObject.put("time:timestamp", timestamp);
                 tripDetails.put(jsonObject);
-
-
             }
-            Thread.sleep(4 *60 * 1000 ); //4 min
+            int minutes = 15;
+            Thread.sleep( minutes *60 * 1000 );
 
         }
 
@@ -203,32 +202,24 @@ public class RejsePlanCall {
             for (String attribute : stopAttributes) {
                 try {
                 if (attribute.equals("rtArrDate")) {
-                    String s = stop.getString(attribute);
-                    Date firstDate = dateFormat.parse(s.substring(0,6) +"20" + s.substring(6));
-                    s = stop.getString("arrDate");
-                    Date secondDate = dateFormat.parse(s.substring(0,6) +"20" + s.substring(6));
-                    daysArrivalDiff = (int) TimeUnit.DAYS.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()));
+                    daysArrivalDiff = clearingDateDaysAttributes(dateFormat, stop, attribute, "arrDate");
+                    continue;
                 }
                 if (attribute.equals("rtDepDate")) {
-                    String s = stop.getString(attribute);
-                    Date firstDate = dateFormat.parse(s.substring(0,6) +"20" + s.substring(6));
-                    s = stop.getString("depDate");
-                    Date secondDate = dateFormat.parse(s.substring(0,6) +"20" + s.substring(6));
-                    daysDepartureDiff = (int) TimeUnit.DAYS.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()));
+                    daysDepartureDiff = clearingDateDaysAttributes(dateFormat, stop, attribute, "depDate");
+                    continue;
                 }
                 if (attribute.equals("rtArrTime")) {
-
-                    Date firstDate = hoursMinFormat.parse(stop.getString(attribute));
-                    Date secondDate = hoursMinFormat.parse(stop.getString("arrTime"));
-                    arrivalDiff = (int) TimeUnit.MINUTES.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime())); //60 second, 1000 mili seconds
+                    arrivalDiff = cleaningMinutesAttribute(hoursMinFormat, stop, attribute, "arrTime");
+                    continue;
                 }
 
                 if (attribute.equals("rtDepTime")) {
-                    Date firstDate = hoursMinFormat.parse(stop.getString(attribute));
-                    Date secondDate = hoursMinFormat.parse(stop.getString("depTime"));
-                    departureDiff = (int) (TimeUnit.MINUTES.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()))); //60 second, 1000 mili seconds
+                    departureDiff = cleaningMinutesAttribute(hoursMinFormat, stop, attribute, "depTime");
+                    continue;
                 }
                 else if (attribute.equals("arrDate") || attribute.equals("arrTime") || attribute.equals("depTime")) {    //do nothing
+                    continue;
                 }
                 else { //delete all empty
                     if (stop.getString(attribute).length() ==0){
@@ -248,6 +239,26 @@ public class RejsePlanCall {
         }
     }
 
+    private static int cleaningMinutesAttribute(SimpleDateFormat hoursMinFormat, JSONObject stop, String attribute, String depTime) throws ParseException {
+        int departureDiff;
+        Date firstDate = hoursMinFormat.parse(stop.getString(attribute));
+        Date secondDate = hoursMinFormat.parse(stop.getString(depTime));
+        departureDiff = (int) (TimeUnit.MINUTES.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()))); //60 second, 1000 mili seconds
+        stop.remove(attribute);
+        return departureDiff;
+    }
+
+    private static int clearingDateDaysAttributes(SimpleDateFormat dateFormat, JSONObject stop, String attribute, String depDate) throws ParseException {
+        int daysDepartureDiff;
+        String s = stop.getString(attribute);
+        Date firstDate = dateFormat.parse(s.substring(0, 6) + "20" + s.substring(6));
+        s = stop.getString(depDate);
+        Date secondDate = dateFormat.parse(s.substring(0, 6) + "20" + s.substring(6));
+        daysDepartureDiff = (int) TimeUnit.DAYS.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()));
+        stop.remove(attribute);
+        return daysDepartureDiff;
+    }
+
     /*
     the first row exist of:
        {
@@ -255,7 +266,6 @@ public class RejsePlanCall {
                 "noNamespaceSchemaLocation":"http://webapp.rejseplanen.dk/xml/rest/hafasRestJourneyDetail.xsd"
      Instead we add '[' as a start of a JSON object.
      */
-
     private static String deleteFirstRow(String responseBody) {
         responseBody = '{' + responseBody.substring(119);
         return responseBody;

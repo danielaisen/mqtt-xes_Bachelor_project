@@ -4,15 +4,12 @@
 
 package fileConstructorXES;
 
-import org.deckfour.xes.info.XLogInfo;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
-import org.deckfour.xes.out.XSerializerRegistry;
 import org.deckfour.xes.out.XesXmlSerializer;
 import org.deckfour.xes.out.XesXmlGZIPSerializer;
 import org.json.JSONObject;
-import requestRespond.XLogHelper;
 
 
 import java.io.*;
