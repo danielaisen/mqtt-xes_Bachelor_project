@@ -51,7 +51,9 @@ public class RejsePlanCall {
         logDetails.put("XES_Type", "Log");
 
         for (int i = 0; i < 1; i++) {
-                       ArrayList<JSONObject> stopAndTrace = parseRejsePlanReturnStopsAndTrace(request);
+
+            ArrayList<JSONObject> stopAndTrace = parseRejsePlanReturnStopsAndTrace(request);
+
             for (JSONObject jsonObject : stopAndTrace) {
 
 //                if (jsonObject.get("Type").equals("Trace")) {
@@ -119,7 +121,7 @@ public class RejsePlanCall {
             if (keys.equals("Stop")) {
                 JSONArray stops = journeyDetail.getJSONArray("Stop");
                 arrangeStopData(stops);
-                stopsObject.put("XES_Type", "Event");
+                stopsObject.put("XES_Type", "Events");
                 stopsObject.put("Stops", stops);
             }
             else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
@@ -129,7 +131,7 @@ public class RejsePlanCall {
             }
         }
         JSONObject traceObject = new JSONObject(traceInfo);
-        traceObject.put("XES_Type", "Trace");
+        traceObject.put("XES_Type", "Trace_Info");
         objects.add(traceObject);
         objects.add(stopsObject);
         return objects;

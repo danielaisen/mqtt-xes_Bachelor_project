@@ -28,6 +28,7 @@ public class CreateXES_File {
 
 
 //    public static void main(String[] args) throws IOException {
+//        jsonObject.get()
         XLog logHelper = XLogHelper.generateNewXLog("firstLog");
 //
 //        fileXESGZ = new FileOutputStream("a" + ".xes.gz");

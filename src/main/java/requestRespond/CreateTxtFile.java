@@ -29,7 +29,7 @@ public class CreateTxtFile {
 
     public static void createFileToJSON(String name, JSONObject tripDetails) {
         Path path = Paths.get("").toAbsolutePath();
-        try (FileWriter file = new FileWriter(path  +"\\testFolder" + "\\" + name)){
+        try (FileWriter file = new FileWriter(path  +"\\testFolder" + "\\" + name + ".json")){
             file.write(String.valueOf(tripDetails));
             file.flush();
         } catch (IOException e) {
