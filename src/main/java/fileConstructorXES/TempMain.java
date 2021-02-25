@@ -20,7 +20,7 @@ import java.nio.file.Paths;
 public class TempMain {
 
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws FileNotFoundException, java.text.ParseException {
 
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject = new JSONObject();

@@ -60,6 +60,7 @@ public class RejsePlanCall {
 //
 //                    continue;
 //                }
+                timestamp = dateFormat.format(new Date());
                 jsonObject.put("time:timestamp", timestamp);
                 tripDetails.put(jsonObject);
             }
@@ -121,8 +122,8 @@ public class RejsePlanCall {
             if (keys.equals("Stop")) {
                 JSONArray stops = journeyDetail.getJSONArray("Stop");
                 arrangeStopData(stops);
-                stopsObject.put("XES_Type", "Events");
-                stopsObject.put("Event", stops);
+                stopsObject.put("XES_Type", "Events"); //todo add activity name
+                stopsObject.put("Events", stops);
             }
             else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
             else {
@@ -202,6 +203,7 @@ public class RejsePlanCall {
         System.out.print("updating the stop objects ");
         SimpleDateFormat hoursMinFormat = new SimpleDateFormat("HH:mm");
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd.yyyy");
+
         for (int i = 0; i < stops.length(); i++) {
             JSONObject stop = stops.getJSONObject(i);
             List<String> stopAttributes = new ArrayList<String>(stop.keySet());
@@ -241,7 +243,9 @@ public class RejsePlanCall {
                 }
 
             }
-
+            String timestamp = dateFormat.format(new Date());
+            stop.put("time:timestamp", timestamp);
+            stop.put("Event_Name", "stop");
             stop.put("daysArrivalDiff", daysArrivalDiff);
             stop.put("arrivalDiff", arrivalDiff);
             stop.put("daysDepartureDiff", daysDepartureDiff);

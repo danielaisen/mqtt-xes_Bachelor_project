@@ -471,6 +471,11 @@ public class XLogHelper {
         }
         return traceToStream;
     }
+
+    public static <c> void decorateElement(XEvent xEvent, String attributeName, Object value) {
+        Class c = value.getClass();
+        decorateElement(xEvent, attributeName,(c) value );
+    }
 }
 
 
