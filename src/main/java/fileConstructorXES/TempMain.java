@@ -35,7 +35,7 @@ public class TempMain {
             e.printStackTrace();
         }
 
-        new CreateXES_File("file", jsonObject);
+        new CreateXES_File("file_XES2", jsonObject);
 
 
     }

@@ -203,6 +203,7 @@ public class RejsePlanCall {
         System.out.print("updating the stop objects ");
         SimpleDateFormat hoursMinFormat = new SimpleDateFormat("HH:mm");
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd.yyyy");
+        SimpleDateFormat dateFormatLong = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
         for (int i = 0; i < stops.length(); i++) {
             JSONObject stop = stops.getJSONObject(i);
@@ -243,7 +244,7 @@ public class RejsePlanCall {
                 }
 
             }
-            String timestamp = dateFormat.format(new Date());
+            String timestamp = dateFormatLong.format(new Date());
             stop.put("time:timestamp", timestamp);
             stop.put("Event_Name", "stop");
             stop.put("daysArrivalDiff", daysArrivalDiff);
