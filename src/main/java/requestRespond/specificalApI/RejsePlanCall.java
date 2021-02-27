@@ -37,25 +37,35 @@ public class RejsePlanCall {
 
     public static void main(String[] args) throws InterruptedException, ParseException, org.json.simple.parser.ParseException {
         org.json.simple.JSONArray timeSeriesJSONMain = new org.json.simple.JSONArray();
-        String uri = "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=157032%2F64911%2F574674%2F234994%2F86%3Fdate%3D26.02.21%26format%3Djson";
+//        String uri = "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=157032%2F64911%2F574674%2F234994%2F86%3Fdate%3D26.02.21%26format%3Djson";
+        String uri2 = "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=157032%2F64911%2F574674%2F234994%2F86%3Fdate%3D25.02.21%26format%3Djson";
 
-//        getTimeIntervals();
+        double []findAverage = new double[3];
+        int numberOfcalls =0;
+        for (String uri : args) {
+            int []averegeTimeBetweenStops = getTimeIntervals(uri);
+            findAverage[0] = findAverage[0] +averegeTimeBetweenStops[0]; //time
+            findAverage[1] = findAverage[1] +averegeTimeBetweenStops[1]; //number of stops
+            findAverage[2] = findAverage[2] +averegeTimeBetweenStops[2]; //empty uri
 
-        int stop =2;
-        for (int i = 0; i < stop; i++) {
-
-            timeSeriesJSONMain = timeSeriesJSON(timeSeriesJSONMain, uri);
-            timeSeriesJSONMain = timeSeriesJSON(timeSeriesJSONMain, uri);
-            int minutes = 1;
-
-
-            if (i < stop-1) {
-                System.out.printf("sleeping for %d min %n", minutes);
-                Thread.sleep( minutes *60 * 1000 );
-            }
+            if (averegeTimeBetweenStops[3] != 0) numberOfcalls = averegeTimeBetweenStops[3];
 
         }
+        numberOfcalls = numberOfcalls - (int) findAverage[2];
+        int stop =2;
+        int averageStops = (int) Math.ceil(findAverage[1]/(numberOfcalls));
+        int minutesBetweenCalls = (int) Math.ceil(findAverage[0]/findAverage[1]);
 
+        for (int i = 0; i < stop; i++) {
+            for (String uri : args) {
+
+                timeSeriesJSONMain = timeSeriesJSON(timeSeriesJSONMain, uri);
+            }
+            if (i < stop-1) {
+                System.out.printf("sleeping for %d min %n", minutesBetweenCalls);
+                Thread.sleep( minutesBetweenCalls *60 * 1000 );
+            }
+        }
         System.out.println("about to set into file");
         CreateTxtFile.createFileToJSON("timeSeriesJSON2", timeSeriesJSONMain);
 
@@ -65,6 +75,35 @@ public class RejsePlanCall {
             old(args);
         }
 
+    }
+
+    private static int[] getTimeIntervals(String uri) throws org.json.simple.parser.ParseException, ParseException {
+        org.json.simple.JSONObject jsonObject = getRejseplanRawData(uri);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+        org.json.simple.JSONArray stops = (org.json.simple.JSONArray) jsonObject.get("Stop");
+        int timeBetweenStops =0;
+        int numberOfStops =0;
+        int noValue =0;
+
+        int size = 0;
+        try {
+            if (stops.get(0) != null) {
+                size = stops.size();
+                Date start = dateFormat.parse(String.valueOf(((org.json.simple.JSONObject) stops.get(0)).get("depTime")));
+                Date end = dateFormat.parse(String.valueOf(((org.json.simple.JSONObject) stops.get(size - 1)).get("arrTime")));
+                numberOfStops = size - 1;
+                timeBetweenStops = (int) (end.getTime() - start.getTime()) / (60 * 1000);
+            }
+//            else {
+//                noValue = 1;
+//            }
+        } catch (NullPointerException e) {
+            noValue = 1;
+        }
+
+        System.out.println(timeBetweenStops);
+
+        return new int[]{timeBetweenStops,numberOfStops, noValue, size};
     }
 
     private static void old(String[] args) {
@@ -115,8 +154,8 @@ public class RejsePlanCall {
 
 
         org.json.simple.JSONObject requestData = getRejseplanRawData(uri);
-
-        checkTimeExistenceAndAdd(requestData, timeSeriesJSON, dateFormat);
+        String timeNow = dateFormat.format(new Date());
+        checkTimeExistenceAndAdd(requestData, timeSeriesJSON, timeNow);
 
 
 
@@ -130,23 +169,30 @@ public class RejsePlanCall {
         return journeyDetail;
     }
 
-    private static void checkTimeExistenceAndAdd(org.json.simple.JSONObject requestData, org.json.simple.JSONArray timeSeriesJSON, SimpleDateFormat dateFormat) {
+    private static void checkTimeExistenceAndAdd(org.json.simple.JSONObject requestData, org.json.simple.JSONArray timeSeriesJSON, String timeNow) {
         org.json.simple.JSONObject JSONObjectTimeObject = new org.json.simple.JSONObject();
-        String timeNow = dateFormat.format(new Date());
+
 //        JSONObjectTimeObject.clear();
         if (timeSeriesJSON.isEmpty()) {
-            addData(requestData, JSONObjectTimeObject, timeNow);
+            JSONObjectTimeObject.put("time", timeNow); //if it doesnt exist in the time-series object
+            JSONObjectTimeObject.put("raw_Data0", requestData);
 
         } else {
             Boolean found = false;
             while (! found) {
                 for(int i = 0; i < timeSeriesJSON.size(); i++) {
                     if (found = ((org.json.simple.JSONObject) timeSeriesJSON.get(i)).get("time").equals(timeNow)) {
+
                         JSONObjectTimeObject = (org.json.simple.JSONObject) timeSeriesJSON.get(i);
+                        timeSeriesJSON.remove(i);
                         break;
                     }
                 }
-                addData(requestData, JSONObjectTimeObject, timeNow);
+                if (!found) {
+                    JSONObjectTimeObject.put("time", timeNow);
+                }
+                int j = JSONObjectTimeObject.size()-1;
+                JSONObjectTimeObject.put("raw_Data" +j, requestData);
                 break;
             }
         }

@@ -165,7 +165,7 @@ public class RequestRespondCall {
     }
 
 
-    static List<String> setInTxtAndReturnHttpList(File outPutFile, String urlIn) throws IOException {
+    static List<String> setInTxtAndReturnHttpList(File outPutFile, String urlIn) throws IOException { //todo change to String []
         BufferedReader reader;
         String line;
        //        StringBuffer responseContent = new StringBuffer();

@@ -64,26 +64,27 @@ public class Publisher {
 		client.connect();
 		int i = 0 ;
 		for (XTrace trace : traces) { //todo Figure out why it doesnt send the first element
-			System.out.println(i);
+			System.out.printf("trace numer %d is running. %n" ,i); //todo do i need this?
 			XesMqttEvent event = event_handler(logName, trace);
 
 			Date secondDate = event.getTime();
 //			System.out.println(secondDate);
 			int diffInMillis = time_interval(startDate, secondDate, dividingTime);
 			startDate = secondDate;
-			System.out.println(diffInMillis);
+//			System.out.println(diffInMillis);
 
 			event.removeEventAttribute("time:timestamp");
-			client.send(Integer.toString(i));
+			client.send(Integer.toString(i));//todo do i need this?
 			client.send(event); //todo create an option to separate between different topics
 //			Thread.sleep(millis);
 			Thread.sleep(diffInMillis);//todo ensure the KeepAlive specification go hand in hand with the sleeping time
 //			client.connect(); //todo not totally sure if this is needed
-			i++;
+			i++; //todo do i need this?
 
 		}
 		client.disconnect();
 		System.out.println("done");
+		System.exit(2);
 
 	}
 
@@ -123,8 +124,14 @@ public class Publisher {
     private static int time_interval(Date startDate, Date secondDate, float dividingTime) {
 
         long realTimeDifference = secondDate.getTime() - startDate.getTime();
-        int abs = Math.round(Math.abs(realTimeDifference)/dividingTime);
 
+		float v = realTimeDifference / dividingTime;
+		if (v < 0) {
+			System.out.printf("found minus time on start: %d , end: %d, with diff: %d", startDate, secondDate, v);
+			System.exit(-100);
+
+		}
+		int abs = Math.round(Math.abs(realTimeDifference) / dividingTime);
 		return abs;
 	}
 

@@ -3,6 +3,7 @@ package requestRespond;
 import org.json.JSONObject;
 import requestRespond.specificalApI.RejsePlanCall;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +35,7 @@ public class RequestRespondMain {
         CreateTxtFile file1 = new CreateTxtFile(name1);
 
         List<String> urlList =  RequestRespondCall.setInTxtAndReturnHttpList(file1.file, rejsePlan);
+
 //        String first = urlList.get(0);
 //        String anObject = "http://www.w3.org/2001/XMLSchema-instance";
 //        System.out.println(first.equals(anObject));
@@ -48,8 +50,15 @@ public class RequestRespondMain {
         System.out.println("closed");
 
 //        ClientRR.mainClientRR(urlList.get(2));
-        RejsePlanCall.main(new String[]{urlList.get(2)});
+//        RejsePlanCall.main(new String[]{urlList.get(2)});
 
+        urlList.remove(0);
+        urlList.remove(0);
+        String[] urls = urlList.toArray(new String[0]);
+
+        RejsePlanCall.main(urls);
+
+        System.exit(333);
 
         RequestRespondCall.getAndWriteLineByLineToTxt(new CreateTxtFile("forWiki").file, wiki);
 
