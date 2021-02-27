@@ -51,11 +51,11 @@ public class RejsePlanCall {
 
         }
         int numberOfcalls = args.length - (int) unValidUrl;
-        int fixed =2;
+        int fixed =4;
         int averageStops = (int) Math.ceil(numberOfStops/(numberOfcalls));
         int minutesBetweenCalls = (int) Math.ceil(time/numberOfStops);
 
-        int howManyCalls = fixed;
+        int howManyCalls = averageStops/4;
 
         System.out.printf("Received %d of journey options, out of them %d are valid. %n",
                  args.length, (int) (numberOfcalls));
