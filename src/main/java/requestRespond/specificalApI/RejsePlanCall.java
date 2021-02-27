@@ -14,9 +14,8 @@ package requestRespond.specificalApI;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
-import requestRespond.CreateTxtFile;
+import requestRespond.CreateFile;
 
-import javax.json.JsonObject;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -37,39 +36,43 @@ public class RejsePlanCall {
 
     public static void main(String[] args) throws InterruptedException, ParseException, org.json.simple.parser.ParseException {
         org.json.simple.JSONArray timeSeriesJSONMain = new org.json.simple.JSONArray();
-//        String uri = "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=157032%2F64911%2F574674%2F234994%2F86%3Fdate%3D26.02.21%26format%3Djson";
-        String uri2 = "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=157032%2F64911%2F574674%2F234994%2F86%3Fdate%3D25.02.21%26format%3Djson";
 
-        double []findAverage = new double[3];
-        int numberOfcalls =0;
-        for (String uri : args) {
-            int []averegeTimeBetweenStops = getTimeIntervals(uri);
-            findAverage[0] = findAverage[0] +averegeTimeBetweenStops[0]; //time
-            findAverage[1] = findAverage[1] +averegeTimeBetweenStops[1]; //number of stops
-            findAverage[2] = findAverage[2] +averegeTimeBetweenStops[2]; //empty uri
+//        double []findAverage = new double[3];
+        double time = 0;
+        double numberOfStops = 0;
+        double unValidUrl = 0;
 
-            if (averegeTimeBetweenStops[3] != 0) numberOfcalls = averegeTimeBetweenStops[3];
+        for (String url : args) {
+            int []averegeTimeBetweenStops = getTimeIntervals(url);
+            time    =   time +averegeTimeBetweenStops[0]; //time
+            numberOfStops = numberOfStops + averegeTimeBetweenStops[1]; //number of stops
+            unValidUrl = unValidUrl +averegeTimeBetweenStops[2]; //empty url
+
 
         }
-        numberOfcalls = numberOfcalls - (int) findAverage[2];
-        int stop =2;
-        int averageStops = (int) Math.ceil(findAverage[1]/(numberOfcalls));
-        int minutesBetweenCalls = (int) Math.ceil(findAverage[0]/findAverage[1]);
+        int numberOfcalls = args.length - (int) unValidUrl;
+        int fixed =2;
+        int averageStops = (int) Math.ceil(numberOfStops/(numberOfcalls));
+        int minutesBetweenCalls = (int) Math.ceil(time/numberOfStops);
 
-        for (int i = 0; i < stop; i++) {
+        int howManyCalls = fixed;
+
+        System.out.printf("Received %d of journey options, out of them %d are valid. %n",
+                 args.length, (int) (numberOfcalls));
+        System.out.printf("There will be %d calls, with %d minutes (fixed time) waiting between them. In total this task will take: %d minutes %n"
+                , howManyCalls, minutesBetweenCalls, (howManyCalls-1)*minutesBetweenCalls);
+        for (int i = 0; i < howManyCalls; i++) {
             for (String uri : args) {
 
                 timeSeriesJSONMain = timeSeriesJSON(timeSeriesJSONMain, uri);
             }
-            if (i < stop-1) {
+            if (i < howManyCalls-1) {
                 System.out.printf("sleeping for %d min %n", minutesBetweenCalls);
                 Thread.sleep( minutesBetweenCalls *60 * 1000 );
             }
         }
-        System.out.println("about to set into file");
-        CreateTxtFile.createFileToJSON("timeSeriesJSON2", timeSeriesJSONMain);
 
-
+        CreateFile.createFileToJSON("timeSeriesJSON2", timeSeriesJSONMain);
 
         if (false) {
             old(args);
@@ -84,8 +87,7 @@ public class RejsePlanCall {
         int timeBetweenStops =0;
         int numberOfStops =0;
         int noValue =0;
-
-        int size = 0;
+        int size;
         try {
             if (stops.get(0) != null) {
                 size = stops.size();
@@ -101,9 +103,7 @@ public class RejsePlanCall {
             noValue = 1;
         }
 
-        System.out.println(timeBetweenStops);
-
-        return new int[]{timeBetweenStops,numberOfStops, noValue, size};
+        return new int[]{timeBetweenStops,numberOfStops, noValue};
     }
 
     private static void old(String[] args) {
@@ -143,7 +143,7 @@ public class RejsePlanCall {
         }
 
         logDetails.put("XES_trace", tripDetails);
-        CreateTxtFile.createFileToJSON("JSON_file_try04",logDetails);
+        CreateFile.createFileToJSON("JSON_file_try04",logDetails);
         createFileWithJSON(tripDetails);
     }
 
@@ -157,15 +157,11 @@ public class RejsePlanCall {
         String timeNow = dateFormat.format(new Date());
         checkTimeExistenceAndAdd(requestData, timeSeriesJSON, timeNow);
 
-
-
-
-        System.out.println();
         return timeSeriesJSON;
     }
 
-    private static org.json.simple.JSONObject getRejseplanRawData(String uri) throws org.json.simple.parser.ParseException {
-        org.json.simple.JSONObject journeyDetail = extractRequestIntoJSON(mainClientRR(uri));
+    private static org.json.simple.JSONObject getRejseplanRawData(String url) throws org.json.simple.parser.ParseException {
+        org.json.simple.JSONObject journeyDetail = extractRequestIntoJSON(mainClientRR(url));
         return journeyDetail;
     }
 
@@ -197,10 +193,7 @@ public class RejsePlanCall {
             }
         }
 
-        System.out.println("added to the JsonObject"); //todo delete this print
-
         timeSeriesJSON.add(JSONObjectTimeObject);
-        System.out.println("have been added to the JsonObject"); //todo delete this print
     }
 
     private static void addData(org.json.simple.JSONObject requestData, org.json.simple.JSONObject JSONObjectTimeObject, String timeNow) {
@@ -211,24 +204,21 @@ public class RejsePlanCall {
 
     }
 
-    public static String mainClientRR(String uri) {
+    public static String mainClientRR(String url) {
 
-        System.out.println("getting the information from: \n" +  uri + "\n");
+//        System.out.println("getting the information from: \n" +  url + "\n");
         JSONArray tripDetails = new JSONArray();
         //method 2: java.net.http.HttpClient
 
-//    String uri = "http://jsonplaceholder.typicode.com/posts";
+//    String url = "http://jsonplaceholder.typicode.com/posts";
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(uri)).build();
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
 
         String s = client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
 //                .thenApply(RejsePlanCall::parseRejsePlanJourneyDetails)
 //                .thenAccept(System.out::println)
                 .join();
-
-//        System.out.println(s); //todo delete this print
-        System.out.println("t´got the the data stirng"); //todo delete
 
         return s;
     }
@@ -275,7 +265,6 @@ public class RejsePlanCall {
         String refinedRespond = deleteFirstChar(responseBody);
 //        System.out.println(refinedRespond);//todo delete this print
 
-        System.out.printf("got the details.. %s%n", new Date());
         JSONParser parser = new JSONParser();
 
         org.json.simple.JSONObject mainJSONobject = (org.json.simple.JSONObject) parser.parse(refinedRespond);
@@ -286,7 +275,7 @@ public class RejsePlanCall {
 
 
     private static void createFileWithJSON(JSONArray tripDetails) {
-        CreateTxtFile file = new CreateTxtFile("rejse3loops");
+        CreateFile file = new CreateFile("rejse3loops");
 
         BufferedWriter bufferedWriter;
         try {
@@ -330,7 +319,7 @@ public class RejsePlanCall {
         }
         else if (original instanceof ArrayList) {
             System.out.println("\n inside the retrieveInformationFromObject object found" + original.getClass());
-            System.out.println();
+
             System.exit(1001);
         }
         else if (original instanceof HashMap) {

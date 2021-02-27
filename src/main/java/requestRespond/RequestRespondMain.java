@@ -3,7 +3,7 @@ package requestRespond;
 import org.json.JSONObject;
 import requestRespond.specificalApI.RejsePlanCall;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,7 +32,7 @@ public class RequestRespondMain {
 //        WriteAndRead.readingAndWritingUsingBuffers(inputFile,outPutFile);
 //
         String name1= "callForFindingRouts";
-        CreateTxtFile file1 = new CreateTxtFile(name1);
+        CreateFile file1 = new CreateFile(name1);
 
         List<String> urlList =  RequestRespondCall.setInTxtAndReturnHttpList(file1.file, rejsePlan);
 
@@ -41,10 +41,10 @@ public class RequestRespondMain {
 //        System.out.println(first.equals(anObject));
 
 
-        CreateTxtFile file2 = new CreateTxtFile("eventLog");
+        CreateFile file2 = new CreateFile("eventLog");
 
         JSONObject jsonObject = RequestRespondCall.getAndWriteLineByLineToTxt(file2.file, urlList.get(2));
-        RequestRespondCall.setInTxtAndReturnHttpList(new CreateTxtFile("beforeEventLog").file, urlList.get(2));
+        RequestRespondCall.setInTxtAndReturnHttpList(new CreateFile("beforeEventLog").file, urlList.get(2));
 //        RequestRespondCall.requestRespondPrint("http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=965961%2F335618%2F8440%2F317768%2F86%3Fdate%3D04.02.21%26station_evaId%3D6033");
 //        RequestRespondCall.requestRespondPrint("http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=892029%2F306142%2F300476%2F147105%2F86%3Fdate%3D06.02.21%26station_evaId%3D50460");
         System.out.println("closed");
@@ -54,13 +54,20 @@ public class RequestRespondMain {
 
         urlList.remove(0);
         urlList.remove(0);
+
         String[] urls = urlList.toArray(new String[0]);
 
+        if (urls.length > 6) {
+            urls = Arrays.copyOfRange(urls, 0, 6);
+        }
+        for (String url : urls) {
+            System.out.println("getting the information from: \n" + url);
+        }
         RejsePlanCall.main(urls);
 
         System.exit(333);
 
-        RequestRespondCall.getAndWriteLineByLineToTxt(new CreateTxtFile("forWiki").file, wiki);
+        RequestRespondCall.getAndWriteLineByLineToTxt(new CreateFile("forWiki").file, wiki);
 
 
 

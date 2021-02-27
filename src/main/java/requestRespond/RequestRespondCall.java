@@ -312,7 +312,7 @@ public class RequestRespondCall {
             bufferedReader.close();
 
         }
-        System.out.println("there has been found " + howmany + " http connections");
+//        System.out.println("there has been found " + howmany + " http connections");
         return https;
     }
 

@@ -14,13 +14,13 @@ import java.nio.file.Paths;
  * @author Daniel Max Aisen (s171206)
  **/
 
-public class CreateTxtFile {
+public class CreateFile {
 
     public Path path;
     public String name;
     public File file;
 //    XesMqttEvent e;
-    public CreateTxtFile(String name){
+    public CreateFile(String name){
         this.path = Paths.get("").toAbsolutePath();
         createFile(name);
 //        XesMqttEvent e = new XesMqttEvent("me", "trying","mybest");
