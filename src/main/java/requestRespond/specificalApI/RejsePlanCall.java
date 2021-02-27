@@ -13,8 +13,10 @@ package requestRespond.specificalApI;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
 import requestRespond.CreateTxtFile;
 
+import javax.json.JsonObject;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -33,7 +35,39 @@ import java.util.concurrent.TimeUnit;
 
 public class RejsePlanCall {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ParseException, org.json.simple.parser.ParseException {
+        org.json.simple.JSONArray timeSeriesJSONMain = new org.json.simple.JSONArray();
+        String uri = "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=157032%2F64911%2F574674%2F234994%2F86%3Fdate%3D26.02.21%26format%3Djson";
+
+//        getTimeIntervals();
+
+        int stop =2;
+        for (int i = 0; i < stop; i++) {
+
+            timeSeriesJSONMain = timeSeriesJSON(timeSeriesJSONMain, uri);
+            timeSeriesJSONMain = timeSeriesJSON(timeSeriesJSONMain, uri);
+            int minutes = 1;
+
+
+            if (i < stop-1) {
+                System.out.printf("sleeping for %d min %n", minutes);
+                Thread.sleep( minutes *60 * 1000 );
+            }
+
+        }
+
+        System.out.println("about to set into file");
+        CreateTxtFile.createFileToJSON("timeSeriesJSON2", timeSeriesJSONMain);
+
+
+
+        if (false) {
+            old(args);
+        }
+
+    }
+
+    private static void old(String[] args) {
         JSONArray tripDetails = new JSONArray();
 //        String firstRequest = mainClientRR("http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=673050%2F236849%2F801108%2F176208%2F86%3Fdate%3D24.02.21%26format%3Djson");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -70,13 +104,67 @@ public class RejsePlanCall {
         }
 
         logDetails.put("XES_trace", tripDetails);
-        saveToJSON_file("JSON_file_try04",logDetails);
+        CreateTxtFile.createFileToJSON("JSON_file_try04",logDetails);
         createFileWithJSON(tripDetails);
     }
 
-    private static void saveToJSON_file(String name, JSONObject logDetails) {
 
-        CreateTxtFile.createFileToJSON(name,logDetails);
+    private static org.json.simple.JSONArray timeSeriesJSON(org.json.simple.JSONArray timeSeriesJSON, String uri) throws ParseException, org.json.simple.parser.ParseException {
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T' HH:mm");
+
+
+        org.json.simple.JSONObject requestData = getRejseplanRawData(uri);
+
+        checkTimeExistenceAndAdd(requestData, timeSeriesJSON, dateFormat);
+
+
+
+
+        System.out.println();
+        return timeSeriesJSON;
+    }
+
+    private static org.json.simple.JSONObject getRejseplanRawData(String uri) throws org.json.simple.parser.ParseException {
+        org.json.simple.JSONObject journeyDetail = extractRequestIntoJSON(mainClientRR(uri));
+        return journeyDetail;
+    }
+
+    private static void checkTimeExistenceAndAdd(org.json.simple.JSONObject requestData, org.json.simple.JSONArray timeSeriesJSON, SimpleDateFormat dateFormat) {
+        org.json.simple.JSONObject JSONObjectTimeObject = new org.json.simple.JSONObject();
+        String timeNow = dateFormat.format(new Date());
+//        JSONObjectTimeObject.clear();
+        if (timeSeriesJSON.isEmpty()) {
+            JSONObjectTimeObject.put("time", timeNow); //if it doesnt exist in the time-series object
+            JSONObjectTimeObject.put("raw_Data first", requestData);
+
+        } else {
+            Boolean found = false;
+            while (! found) {
+                for(int i = 0; i < timeSeriesJSON.size(); i++) {
+                    if (found = ((org.json.simple.JSONObject) timeSeriesJSON.get(i)).get("time").equals(timeNow)) {
+                        JSONObjectTimeObject = (org.json.simple.JSONObject) timeSeriesJSON.get(i);
+                        JSONObjectTimeObject.put("raw_Data" + i, requestData);
+                        break;
+                    }
+                }
+                addData(requestData, JSONObjectTimeObject, timeNow);
+                break;
+            }
+        }
+
+        System.out.println("added to the JsonObject"); //todo delete this print
+
+        timeSeriesJSON.add(JSONObjectTimeObject);
+        System.out.println("have been added to the JsonObject"); //todo delete this print
+    }
+
+    private static void addData(org.json.simple.JSONObject requestData, org.json.simple.JSONObject JSONObjectTimeObject, String timeNow) {
+        JSONObjectTimeObject.put("time", timeNow); //if it doesnt exist in the time-series object
+        JSONObjectTimeObject.put("raw_Data", requestData);
+        //todo add all the info
+
+
     }
 
     public static String mainClientRR(String uri) {
@@ -95,48 +183,63 @@ public class RejsePlanCall {
 //                .thenAccept(System.out::println)
                 .join();
 
-        System.out.println(s); //todo delete this print
+//        System.out.println(s); //todo delete this print
+        System.out.println("t´got the the data stirng"); //todo delete
 
         return s;
     }
 
-
     public static ArrayList<JSONObject> parseRejsePlanReturnStopsAndTrace(String responseBody) {
         ArrayList<JSONObject> objects = new ArrayList<JSONObject>();
-
-        String refinedRespond = deleteFirstChar(responseBody);
-        System.out.println(refinedRespond);//todo delete this print
-
-        JSONObject mainJSONobject = new JSONObject(refinedRespond);
-
-
-        JSONObject journeyDetail = mainJSONobject.getJSONObject("JourneyDetail");
-        List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
-        System.out.println(namesJourneyDetail); //todo delete this print
-
-
-        HashMap<String, String> traceInfo = new HashMap<>();
-        JSONObject stopsObject = new JSONObject();
-
-        for (String keys : journeyDetail.keySet()) {
-            if (keys.equals("Stop")) {
-                JSONArray stops = journeyDetail.getJSONArray("Stop");
-                arrangeStopData(stops);
-                stopsObject.put("XES_Type", "Events"); //todo add activity name
-                stopsObject.put("Events", stops);
-            }
-            else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
-            else {
-                Object tempObject = journeyDetail.get(keys);
-                retrieveInformationFromObject(keys, tempObject, traceInfo);
-            }
-        }
-        JSONObject traceObject = new JSONObject(traceInfo);
-        traceObject.put("XES_Type", "Trace_Info");
-        objects.add(traceObject);
-        objects.add(stopsObject);
+//
+//        String refinedRespond = deleteFirstChar(responseBody);
+//        System.out.println(refinedRespond);//todo delete this print
+//
+//        JSONObject mainJSONobject = new JSONObject(refinedRespond);
+//
+//
+//        JSONObject journeyDetail = mainJSONobject.getJSONObject("JourneyDetail");
+//        List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
+//        System.out.println(namesJourneyDetail); //todo delete this print
+//
+//
+//        HashMap<String, String> traceInfo = new HashMap<>();
+//        JSONObject stopsObject = new JSONObject();
+//
+//        for (String keys : journeyDetail.keySet()) {
+//            if (keys.equals("Stop")) {
+//                JSONArray stops = journeyDetail.getJSONArray("Stop");
+//                arrangeStopData(stops);
+//                stopsObject.put("XES_Type", "Events"); //todo add activity name
+//                stopsObject.put("Events", stops);
+//            }
+//            else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
+//            else {
+//                Object tempObject = journeyDetail.get(keys);
+//                retrieveInformationFromObject(keys, tempObject, traceInfo);
+//            }
+//        }
+//        JSONObject traceObject = new JSONObject(traceInfo);
+//        traceObject.put("XES_Type", "Trace_Info");
+//        objects.add(traceObject);
+//        objects.add(stopsObject);
         return objects;
     }
+
+
+    private static org.json.simple.JSONObject extractRequestIntoJSON(String responseBody) throws org.json.simple.parser.ParseException {
+        String refinedRespond = deleteFirstChar(responseBody);
+//        System.out.println(refinedRespond);//todo delete this print
+
+        System.out.printf("got the details.. %s%n", new Date());
+        JSONParser parser = new JSONParser();
+
+        org.json.simple.JSONObject mainJSONobject = (org.json.simple.JSONObject) parser.parse(refinedRespond);
+
+
+        return (org.json.simple.JSONObject) mainJSONobject.get("JourneyDetail");
+    }
+
 
     private static void createFileWithJSON(JSONArray tripDetails) {
         CreateTxtFile file = new CreateTxtFile("rejse3loops");

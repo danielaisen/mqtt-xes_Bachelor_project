@@ -36,6 +36,15 @@ public class CreateTxtFile {
             e.printStackTrace();
         }
     }
+    public static void createFileToJSON(String name, org.json.simple.JSONArray tripDetails) {
+        Path path = Paths.get("").toAbsolutePath();
+        try (FileWriter file = new FileWriter(path  +"\\testFolder" + "\\" + name + ".json")){
+            file.write(String.valueOf(tripDetails));
+            file.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     private void createFile(String name) {
