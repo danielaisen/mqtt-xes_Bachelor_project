@@ -135,8 +135,7 @@ public class RejsePlanCall {
         String timeNow = dateFormat.format(new Date());
 //        JSONObjectTimeObject.clear();
         if (timeSeriesJSON.isEmpty()) {
-            JSONObjectTimeObject.put("time", timeNow); //if it doesnt exist in the time-series object
-            JSONObjectTimeObject.put("raw_Data first", requestData);
+            addData(requestData, JSONObjectTimeObject, timeNow);
 
         } else {
             Boolean found = false;
@@ -144,7 +143,6 @@ public class RejsePlanCall {
                 for(int i = 0; i < timeSeriesJSON.size(); i++) {
                     if (found = ((org.json.simple.JSONObject) timeSeriesJSON.get(i)).get("time").equals(timeNow)) {
                         JSONObjectTimeObject = (org.json.simple.JSONObject) timeSeriesJSON.get(i);
-                        JSONObjectTimeObject.put("raw_Data" + i, requestData);
                         break;
                     }
                 }
