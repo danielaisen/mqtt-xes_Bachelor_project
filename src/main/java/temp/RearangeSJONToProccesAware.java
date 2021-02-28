@@ -18,7 +18,10 @@ public class RearangeSJONToProccesAware {
     public static void main(String[] args) {
 
 
-        JSONArray jsonArrayTimeSeries = FilesHelper.readJSONArrayFile("timeSeriesJSON2");
+    JSONArray jsonArrayTimeSeriesOrdered = new JSONArray();
+    JSONObject jsonObjectTimeSeriesOrdered = new JSONObject();
+
+    JSONArray jsonArrayTimeSeries = FilesHelper.readJSONArrayFile("timeSeriesJSON2");
         for (Object object : jsonArrayTimeSeries) {
             JSONObject objectTimeSeries = (JSONObject) object;
             System.out.println(jsonArrayTimeSeries.size());

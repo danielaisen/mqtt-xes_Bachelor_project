@@ -270,7 +270,7 @@ public class RejsePlanCall {
 
 //        org.json.simple.JSONObject journeyDetail = (org.json.simple.JSONObject) mainJSONObject.get("JourneyDetail");
         List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
-        System.out.println(namesJourneyDetail); //todo delete this print
+//        System.out.println(namesJourneyDetail); //todo delete this print
 
 
         HashMap<String, String> traceInfo = new HashMap<>();
@@ -286,7 +286,7 @@ public class RejsePlanCall {
             else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
             else {
                 Object tempObject = journeyDetail.get(keys);
-                retrieveInformationFromObject((String) keys, tempObject, traceInfo);
+                retrieveInformationFromObjectUSINGSIMPLE((String) keys, tempObject, traceInfo);
             }
         }
         org.json.simple.JSONObject traceObject = new org.json.simple.JSONObject(traceInfo);
@@ -379,6 +379,13 @@ public class RejsePlanCall {
         }
     }
     public static void retrieveInformationFromObjectUSINGSIMPLE(Object keys, Object original, HashMap<String, String> traceInfo) {
+        for (String name: traceInfo.keySet()){ //todo delete
+            String key = name.toString();
+            String value = traceInfo.get(name).toString();
+            System.out.println(key + " " + value);
+        }
+
+
         if (original instanceof String) {
             if (traceInfo.containsKey(keys)) {
                 if (!traceInfo.get(keys).equals(original)) {
@@ -413,9 +420,11 @@ public class RejsePlanCall {
             System.exit(1001);
         }
         else if (original instanceof HashMap) {
-            System.out.println("\n inside the retrieveInformationFromObject object found " + original.getClass());
-            System.out.println();
-            System.exit(1002);
+            HashMap hashMap = (HashMap) original;
+            for (Object key : hashMap.keySet()) {
+
+                retrieveInformationFromObject((String) key, hashMap.get(key), traceInfo);
+            }
 
         } else if (original == null) {
             System.out.println();
