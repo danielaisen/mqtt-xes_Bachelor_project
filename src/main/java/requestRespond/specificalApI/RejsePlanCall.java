@@ -13,8 +13,9 @@ package requestRespond.specificalApI;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
-import requestRespond.CreateFile;
+import fileConstructorXES.FilesHelper;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -51,11 +52,11 @@ public class RejsePlanCall {
 
         }
         int numberOfcalls = args.length - (int) unValidUrl;
-        int fixed =4;
+        int fixed =8;
         int averageStops = (int) Math.ceil(numberOfStops/(numberOfcalls));
         int minutesBetweenCalls = (int) Math.ceil(time/numberOfStops);
 
-        int howManyCalls = averageStops/4;
+        int howManyCalls = fixed;
 
         System.out.printf("Received %d of journey options, out of them %d are valid. %n",
                  args.length, (int) (numberOfcalls));
@@ -72,7 +73,7 @@ public class RejsePlanCall {
             }
         }
 
-        CreateFile.createFileToJSON("timeSeriesJSON2", timeSeriesJSONMain);
+        FilesHelper.createFileToJSONSimple("timeSeriesJSON2", timeSeriesJSONMain);
 
         if (false) {
             old(args);
@@ -143,7 +144,7 @@ public class RejsePlanCall {
         }
 
         logDetails.put("XES_trace", tripDetails);
-        CreateFile.createFileToJSON("JSON_file_try04",logDetails);
+        FilesHelper.createFileToJSONSimple("JSON_file_try04",logDetails);
         createFileWithJSON(tripDetails);
     }
 
@@ -225,38 +226,73 @@ public class RejsePlanCall {
 
     public static ArrayList<JSONObject> parseRejsePlanReturnStopsAndTrace(String responseBody) {
         ArrayList<JSONObject> objects = new ArrayList<JSONObject>();
-//
-//        String refinedRespond = deleteFirstChar(responseBody);
-//        System.out.println(refinedRespond);//todo delete this print
-//
-//        JSONObject mainJSONobject = new JSONObject(refinedRespond);
-//
-//
-//        JSONObject journeyDetail = mainJSONobject.getJSONObject("JourneyDetail");
-//        List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
-//        System.out.println(namesJourneyDetail); //todo delete this print
-//
-//
-//        HashMap<String, String> traceInfo = new HashMap<>();
-//        JSONObject stopsObject = new JSONObject();
-//
-//        for (String keys : journeyDetail.keySet()) {
-//            if (keys.equals("Stop")) {
-//                JSONArray stops = journeyDetail.getJSONArray("Stop");
-//                arrangeStopData(stops);
-//                stopsObject.put("XES_Type", "Events"); //todo add activity name
-//                stopsObject.put("Events", stops);
-//            }
-//            else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
-//            else {
-//                Object tempObject = journeyDetail.get(keys);
-//                retrieveInformationFromObject(keys, tempObject, traceInfo);
-//            }
-//        }
-//        JSONObject traceObject = new JSONObject(traceInfo);
-//        traceObject.put("XES_Type", "Trace_Info");
-//        objects.add(traceObject);
-//        objects.add(stopsObject);
+
+        String refinedRespond = deleteFirstChar(responseBody);
+        System.out.println(refinedRespond);//todo delete this print
+
+        JSONObject mainJSONobject = new JSONObject(refinedRespond);
+
+
+        JSONObject journeyDetail = mainJSONobject.getJSONObject("JourneyDetail");
+        List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
+        System.out.println(namesJourneyDetail); //todo delete this print
+
+
+        HashMap<String, String> traceInfo = new HashMap<>();
+        JSONObject stopsObject = new JSONObject();
+
+        for (String keys : journeyDetail.keySet()) {
+            if (keys.equals("Stop")) {
+                JSONArray stops = journeyDetail.getJSONArray("Stop");
+                arrangeStopData(stops);
+                stopsObject.put("XES_Type", "Events"); //todo add activity name
+                stopsObject.put("Events", stops);
+            }
+            else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
+            else {
+                Object tempObject = journeyDetail.get(keys);
+                retrieveInformationFromObject(keys, tempObject, traceInfo);
+            }
+        }
+        JSONObject traceObject = new JSONObject(traceInfo);
+        traceObject.put("XES_Type", "Trace_Info");
+        objects.add(traceObject);
+        objects.add(stopsObject);
+        return objects;
+    }
+    public static ArrayList<org.json.simple.JSONObject> parseRejsePlanReturnStopsAndTraceSimple(String responseBody) {
+        ArrayList<org.json.simple.JSONObject> objects = new ArrayList<org.json.simple.JSONObject>();
+
+
+
+        org.json.simple.JSONObject journeyDetail = (org.json.simple.JSONObject) JSONValue.parse(responseBody);
+
+
+//        org.json.simple.JSONObject journeyDetail = (org.json.simple.JSONObject) mainJSONObject.get("JourneyDetail");
+        List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
+        System.out.println(namesJourneyDetail); //todo delete this print
+
+
+        HashMap<String, String> traceInfo = new HashMap<>();
+        org.json.simple.JSONObject stopsObject = new org.json.simple.JSONObject();
+
+        for (Object keys : journeyDetail.keySet()) {
+            if (keys.equals("Stop")) {
+                org.json.simple.JSONArray stops = (org.json.simple.JSONArray) journeyDetail.get("Stop");
+                arrangeStopData(stops);
+                stopsObject.put("XES_Type", "Events"); //todo add activity name
+                stopsObject.put("Events", stops);
+            }
+            else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
+            else {
+                Object tempObject = journeyDetail.get(keys);
+                retrieveInformationFromObject((String) keys, tempObject, traceInfo);
+            }
+        }
+        org.json.simple.JSONObject traceObject = new org.json.simple.JSONObject(traceInfo);
+        traceObject.put("XES_Type", "Trace_Info");
+        objects.add(traceObject);
+        objects.add(stopsObject);
         return objects;
     }
 
@@ -275,7 +311,7 @@ public class RejsePlanCall {
 
 
     private static void createFileWithJSON(JSONArray tripDetails) {
-        CreateFile file = new CreateFile("rejse3loops");
+        FilesHelper file = new FilesHelper("rejse3loops");
 
         BufferedWriter bufferedWriter;
         try {
@@ -288,7 +324,12 @@ public class RejsePlanCall {
         }
     }
 
-    private static void retrieveInformationFromObject(String keys, Object original, HashMap<String, String> traceInfo) {
+    public static void retrieveInformationFromObject(String keys, Object original, HashMap<String, String> traceInfo) {
+        for (String name: traceInfo.keySet()){ //todo delete
+            String key = name.toString();
+            String value = traceInfo.get(name).toString();
+            System.out.println(key + " " + value);
+        }
         if (original instanceof String) {
             if (traceInfo.containsKey(keys)) {
                 if (!traceInfo.get(keys).equals(original)) {
@@ -323,14 +364,67 @@ public class RejsePlanCall {
             System.exit(1001);
         }
         else if (original instanceof HashMap) {
-            System.out.println("\n inside the retrieveInformationFromObject object found" + original.getClass());
-            System.out.println();
-            System.exit(1002);
+
+            HashMap hashMap = (HashMap) original;
+            for (Object key : hashMap.keySet()) {
+
+                retrieveInformationFromObject((String) key, hashMap.get(key), traceInfo);
+            }
 
         }
         else{
             System.out.println("\n error has occur in retrieveInformationFromObject method");
-            System.out.println(original.getClass() + "has been found instead");
+            System.out.println(original.getClass() + " has been found instead");
+            System.exit(1002);
+        }
+    }
+    public static void retrieveInformationFromObjectUSINGSIMPLE(Object keys, Object original, HashMap<String, String> traceInfo) {
+        if (original instanceof String) {
+            if (traceInfo.containsKey(keys)) {
+                if (!traceInfo.get(keys).equals(original)) {
+                    traceInfo.put(keys + "_addition", (String) original);
+                }else { } //do nothing
+            }
+            else{
+                traceInfo.put((String)keys, (String) original);
+            }
+            traceInfo.put((String) keys, (String) original);
+        }
+        else if (original instanceof org.json.simple.JSONObject) {
+            org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) original;
+            for (Object key : jsonObject.keySet()) {
+                retrieveInformationFromObjectUSINGSIMPLE((String)key, jsonObject.get(key), traceInfo);
+
+            }
+        }
+        else if (original instanceof org.json.simple.JSONArray) {
+
+            for (Object object : (org.json.simple.JSONArray) original) {
+                if (!(object instanceof org.json.simple.JSONObject)) {
+                    retrieveInformationFromObjectUSINGSIMPLE(String.valueOf(object.getClass()),object, traceInfo);
+                }
+                retrieveInformationFromObjectUSINGSIMPLE(null, object, traceInfo);
+            }
+
+        }
+        else if (original instanceof ArrayList) {
+            System.out.println("\n inside the retrieveInformationFromObject object found " + original.getClass());
+
+            System.exit(1001);
+        }
+        else if (original instanceof HashMap) {
+            System.out.println("\n inside the retrieveInformationFromObject object found " + original.getClass());
+            System.out.println();
+            System.exit(1002);
+
+        } else if (original == null) {
+            System.out.println();
+            System.out.println("\n inside the retrieveInformationFromObject object found " + null);
+            System.out.println();
+
+        } else {
+            System.out.println("\n error has occur in retrieveInformationFromObject method");
+            System.out.println(original.getClass() + "  has been found instead");
             System.exit(1003);
         }
     }
@@ -390,10 +484,73 @@ public class RejsePlanCall {
         }
     }
 
+    private static void arrangeStopData(org.json.simple.JSONArray stops) {
+        System.out.print("updating the stop objects ");
+        SimpleDateFormat hoursMinFormat = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd.yyyy");
+        SimpleDateFormat dateFormatLong = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+
+        for (int i = 0; i < stops.size(); i++) {
+            org.json.simple.JSONObject stop = (org.json.simple.JSONObject) stops.get(i);
+            List<String> stopAttributes = new ArrayList<String>(stop.keySet());
+            int daysArrivalDiff = 0;
+            int daysDepartureDiff = 0;
+            int departureDiff =0;
+            int arrivalDiff = 0;
+            for (String attribute : stopAttributes) {
+                try {
+                    if (attribute.equals("rtArrDate")) {
+                        daysArrivalDiff = clearingDateDaysAttributes(dateFormat, stop, attribute, "arrDate");
+                        continue;
+                    }
+                    if (attribute.equals("rtDepDate")) {
+                        daysDepartureDiff = clearingDateDaysAttributes(dateFormat, stop, attribute, "depDate");
+                        continue;
+                    }
+                    if (attribute.equals("rtArrTime")) {
+                        arrivalDiff = cleaningMinutesAttribute(hoursMinFormat, stop, attribute, "arrTime");
+                        continue;
+                    }
+
+                    if (attribute.equals("rtDepTime")) {
+                        departureDiff = cleaningMinutesAttribute(hoursMinFormat, stop, attribute, "depTime");
+                        continue;
+                    }
+                    else if (attribute.equals("arrDate") || attribute.equals("arrTime") || attribute.equals("depTime")) {    //do nothing
+                        continue;
+                    }
+                    else { //delete all empty
+                        if (((String) stop.get(attribute)).length() ==0){
+                            stop.remove(attribute);
+                        }
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            String timestamp = dateFormatLong.format(new Date());
+            stop.put("time:timestamp", timestamp);
+            stop.put("Event_Name", "stop");
+            stop.put("daysArrivalDiff", daysArrivalDiff);
+            stop.put("arrivalDiff", arrivalDiff);
+            stop.put("daysDepartureDiff", daysDepartureDiff);
+            stop.put("departureDiff", departureDiff);
+        }
+    }
+
     private static int cleaningMinutesAttribute(SimpleDateFormat hoursMinFormat, JSONObject stop, String attribute, String depTime) throws ParseException {
         int departureDiff;
         Date firstDate = hoursMinFormat.parse(stop.getString(attribute));
         Date secondDate = hoursMinFormat.parse(stop.getString(depTime));
+        departureDiff = (int) (TimeUnit.MINUTES.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()))); //60 second, 1000 mili seconds
+        stop.remove(attribute);
+        return departureDiff;
+    }
+    private static int cleaningMinutesAttribute(SimpleDateFormat hoursMinFormat, org.json.simple.JSONObject stop, String attribute, String depTime) throws ParseException {
+        int departureDiff;
+        Date firstDate = hoursMinFormat.parse((String) stop.get(attribute));
+        Date secondDate = hoursMinFormat.parse((String) stop.get(depTime));
         departureDiff = (int) (TimeUnit.MINUTES.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()))); //60 second, 1000 mili seconds
         stop.remove(attribute);
         return departureDiff;
@@ -409,7 +566,16 @@ public class RejsePlanCall {
         stop.remove(attribute);
         return daysDepartureDiff;
     }
-
+    private static int clearingDateDaysAttributes(SimpleDateFormat dateFormat, org.json.simple.JSONObject stop, String attribute, String depDate) throws ParseException {
+        int daysDepartureDiff;
+        String s = (String) stop.get(attribute);
+        Date firstDate = dateFormat.parse(s.substring(0, 6) + "20" + s.substring(6));
+        s = (String) stop.get(depDate);
+        Date secondDate = dateFormat.parse(s.substring(0, 6) + "20" + s.substring(6));
+        daysDepartureDiff = (int) TimeUnit.DAYS.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()));
+        stop.remove(attribute);
+        return daysDepartureDiff;
+    }
     /*
     the first row exist of:
        {

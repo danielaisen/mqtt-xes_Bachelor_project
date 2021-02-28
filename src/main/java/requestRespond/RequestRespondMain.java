@@ -1,5 +1,6 @@
 package requestRespond;
 
+import fileConstructorXES.FilesHelper;
 import org.json.JSONObject;
 import requestRespond.specificalApI.RejsePlanCall;
 
@@ -32,7 +33,7 @@ public class RequestRespondMain {
 //        WriteAndRead.readingAndWritingUsingBuffers(inputFile,outPutFile);
 //
         String name1= "callForFindingRouts";
-        CreateFile file1 = new CreateFile(name1);
+        FilesHelper file1 = new FilesHelper(name1);
 
         List<String> urlList =  RequestRespondCall.setInTxtAndReturnHttpList(file1.file, rejsePlan);
 
@@ -41,10 +42,10 @@ public class RequestRespondMain {
 //        System.out.println(first.equals(anObject));
 
 
-        CreateFile file2 = new CreateFile("eventLog");
+        FilesHelper file2 = new FilesHelper("eventLog");
 
         JSONObject jsonObject = RequestRespondCall.getAndWriteLineByLineToTxt(file2.file, urlList.get(2));
-        RequestRespondCall.setInTxtAndReturnHttpList(new CreateFile("beforeEventLog").file, urlList.get(2));
+        RequestRespondCall.setInTxtAndReturnHttpList(new FilesHelper("beforeEventLog").file, urlList.get(2));
 //        RequestRespondCall.requestRespondPrint("http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=965961%2F335618%2F8440%2F317768%2F86%3Fdate%3D04.02.21%26station_evaId%3D6033");
 //        RequestRespondCall.requestRespondPrint("http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=892029%2F306142%2F300476%2F147105%2F86%3Fdate%3D06.02.21%26station_evaId%3D50460");
         System.out.println("closed");
@@ -67,7 +68,7 @@ public class RequestRespondMain {
 
         System.exit(333);
 
-        RequestRespondCall.getAndWriteLineByLineToTxt(new CreateFile("forWiki").file, wiki);
+        RequestRespondCall.getAndWriteLineByLineToTxt(new FilesHelper("forWiki").file, wiki);
 
 
 
