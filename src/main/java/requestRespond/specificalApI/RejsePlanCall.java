@@ -325,11 +325,11 @@ public class RejsePlanCall {
     }
 
     public static void retrieveInformationFromObject(String keys, Object original, HashMap<String, String> traceInfo) {
-        for (String name: traceInfo.keySet()){ //todo delete
-            String key = name.toString();
-            String value = traceInfo.get(name).toString();
-            System.out.println(key + " " + value);
-        }
+//        for (String name: traceInfo.keySet()){ //todo delete
+//            String key = name.toString();
+//            String value = traceInfo.get(name).toString();
+//            System.out.println(key + " " + value);
+//        }
         if (original instanceof String) {
             if (traceInfo.containsKey(keys)) {
                 if (!traceInfo.get(keys).equals(original)) {
@@ -379,11 +379,11 @@ public class RejsePlanCall {
         }
     }
     public static void retrieveInformationFromObjectUSINGSIMPLE(Object keys, Object original, HashMap<String, String> traceInfo) {
-        for (String name: traceInfo.keySet()){ //todo delete
-            String key = name.toString();
-            String value = traceInfo.get(name).toString();
-            System.out.println(key + " " + value);
-        }
+//        for (String name: traceInfo.keySet()){ //todo delete
+//            String key = name.toString();
+//            String value = traceInfo.get(name).toString();
+//            System.out.println(key + " " + value);
+//        }
 
 
         if (original instanceof String) {
