@@ -263,13 +263,9 @@ public class RejsePlanCall {
     public static ArrayList<org.json.simple.JSONObject> parseRejsePlanReturnStopsAndTraceSimple(String responseBody) {
         ArrayList<org.json.simple.JSONObject> objects = new ArrayList<org.json.simple.JSONObject>();
 
-
-
         org.json.simple.JSONObject journeyDetail = (org.json.simple.JSONObject) JSONValue.parse(responseBody);
 
-
-//        org.json.simple.JSONObject journeyDetail = (org.json.simple.JSONObject) mainJSONObject.get("JourneyDetail");
-        List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
+//        List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
 //        System.out.println(namesJourneyDetail); //todo delete this print
 
 
@@ -280,7 +276,6 @@ public class RejsePlanCall {
             if (keys.equals("Stop")) {
                 org.json.simple.JSONArray stops = (org.json.simple.JSONArray) journeyDetail.get("Stop");
                 arrangeStopData(stops);
-                stopsObject.put("XES_Type", "Events"); //todo add activity name
                 stopsObject.put("Events", stops);
             }
             else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object

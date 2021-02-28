@@ -18,6 +18,18 @@ public class DateHelper {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
             dateFormat.parse(time);
             myDate = dateFormat.parse(time);
+        }else if (time.length() == 17){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T' HH:mm");
+            dateFormat.parse(time);
+            myDate = dateFormat.parse(time);
+        }else if (time.length() == 16){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+            dateFormat.parse(time);
+            myDate = dateFormat.parse(time);
+        }else if (time.length() == 5){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+            dateFormat.parse(time);
+            myDate = dateFormat.parse(time);
         }
         else{
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -33,6 +45,9 @@ public class DateHelper {
 
     public static Date getDateHHMM(Object object) throws ParseException {
         SimpleDateFormat hoursMinFormat = new SimpleDateFormat("HH:mm");
+        if (object instanceof Date) {
+            return hoursMinFormat.parse(hoursMinFormat.format(object));
+        }
         return hoursMinFormat.parse((String) object);
     }
     public static Date getDateMMDDYYYY(Object object) throws ParseException {
@@ -59,6 +74,12 @@ public class DateHelper {
         return myDate;
     }
 
+    public static long getTimeValue(Object s) throws ParseException {
+        if (s instanceof Date) {
+            return ((Date) s).getTime();
+        }
+        return  getDate(s).getTime();
+    }
 
 
 
