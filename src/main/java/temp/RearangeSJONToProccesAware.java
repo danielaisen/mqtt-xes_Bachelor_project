@@ -25,7 +25,7 @@ import static requestRespond.specificalApI.RejsePlanCall.*;
 public class RearangeSJONToProccesAware {
 
     public static void main(String[] args) throws ParseException {
-        int i = 0, j =0;
+//        int i = 0, j =0;
 
     JSONArray totallSumationOfAll = new JSONArray();
     JSONArray traceIsForEachLine = new JSONArray();
@@ -38,10 +38,10 @@ public class RearangeSJONToProccesAware {
 //            JSONObject jsonObjectTimeSeriesOrdered = new JSONObject();
             JSONObject V1jsonObjectTimeSeriesOrdered = new JSONObject();
 
-            if (i == 2) {
-                i=0;
-                break;
-            } i++;
+//            if (i == 2) {
+//                i=0;
+//                break;
+//            } i++;
 
             JSONObject objectTimeSeries = (JSONObject) object;
 //            System.out.println(jsonArrayTimeSeries.size());
@@ -51,10 +51,10 @@ public class RearangeSJONToProccesAware {
 //            jsonObjectTimeSeriesOrdered.put("time",date);
             V1jsonObjectTimeSeriesOrdered.put("time",date);
             for (Object key : objectTimeSeries.keySet()) {
-                if (j == 2) {
-                    j=0;
-                    break;
-                } j++;
+//                if (j == 2) {
+//                    j=0;
+//                    break;
+//                } j++;
 
 //                String string = (objectTimeSeries.get(key)).toString();
 
@@ -122,7 +122,6 @@ public class RearangeSJONToProccesAware {
             if (keys.equals("Stop")) {
                 org.json.simple.JSONArray stops = (org.json.simple.JSONArray) journeyDetail.get("Stop");
                 V1arrangeStopData(stops);
-//                stopsObject.put("XES_Type", "Events"); //todo add activity name
                 objects.add(stops);
                 stopsObject.put("Events", stops);
             }
