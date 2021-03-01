@@ -29,6 +29,9 @@ public class RearangeSJONToProccesAware {
 
     JSONArray totallSumationOfAll = new JSONArray();
     JSONArray traceIsForEachLine = new JSONArray();
+//    JSONObject finalReadyXESLineLog = new JSONObject();
+    JSONArray finalReadyXESLineLog = new JSONArray();
+//    finalReadyXESLineLog.put("XES_Type", "Log_Line_Log");
 
     JSONArray jsonArrayTimeSeries = FilesHelper.readJSONArrayFile("timeSeriesJSON2");
         for (Object object : jsonArrayTimeSeries) {
@@ -46,15 +49,14 @@ public class RearangeSJONToProccesAware {
             objectTimeSeries.remove("time");
 //            HashMap<String , String> myTEST = new HashMap<>();
 //            jsonObjectTimeSeriesOrdered.put("time",date);
-            V1jsonObjectTimeSeriesOrdered.put("time:timestamp",date);
+            V1jsonObjectTimeSeriesOrdered.put("time",date);
             for (Object key : objectTimeSeries.keySet()) {
-
                 if (j == 2) {
                     j=0;
                     break;
                 } j++;
 
-                String string = (objectTimeSeries.get(key)).toString();
+//                String string = (objectTimeSeries.get(key)).toString();
 
 //                ArrayList<JSONObject> eventAndTraceOrTopic =parseRejsePlanReturnStopsAndTraceSimple(string);
 
@@ -69,18 +71,37 @@ public class RearangeSJONToProccesAware {
 //                retrieveInformationFromObjectUSINGSIMPLE(null, event, myTEST); //not working jet. gather all the data.
 
 //                jsonObjectTimeSeriesOrdered.put(key, V1eventAndTraceOrTopic);
-                V1jsonObjectTimeSeriesOrdered.put(key, V1eventAndTraceOrTopic);
+                V1jsonObjectTimeSeriesOrdered.put(key+"_event0_trace_1", V1eventAndTraceOrTopic);
+
+                if (finalReadyXESLineLog.isEmpty()) {
+                    JSONArray events = new JSONArray();
+                    events.add(event);
+                    trace.put("Events", events);
+                    finalReadyXESLineLog.add(trace);
+                    continue;
+                }
+                int index = containTraceObjectNumber(finalReadyXESLineLog, trace);
+                if (index == -1) {
+                    JSONArray events = new JSONArray();
+                    events.add(event);
+                    trace.put("Events", events);
+                    finalReadyXESLineLog.add(trace);
+                } else {
+                    JSONObject thisTrace = (JSONObject) finalReadyXESLineLog.get(index);
+                    JSONArray events = (JSONArray) thisTrace.get("Events");
+                    events.add(event);
+                }
+
             }
 
             totallSumationOfAll.add(V1jsonObjectTimeSeriesOrdered);
 //            traceIsForEachLine.add(jsonObjectTimeSeriesOrdered);
 
-
         }
+        String fileName = "traceByLine";
+        FilesHelper.createFileToJSONSimple(fileName, finalReadyXESLineLog);
 
-
-
-        System.out.println("done RearangeSJONToProccesAware");
+        System.out.println("done RearangeSJONToProccesAware. Saved as " + fileName);
 
     }
 
@@ -121,7 +142,7 @@ public class RearangeSJONToProccesAware {
 
 
     private static void V1arrangeStopData(org.json.simple.JSONArray stops) {
-        System.out.print("updating the stop objects ");
+//        System.out.print("updating the stop objects ");
 
 //        SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd.yyyy");
 //        SimpleDateFormat dateFormatLong = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
@@ -277,12 +298,30 @@ public class RearangeSJONToProccesAware {
         return event;
     }
 
-    private boolean areTracesEqual(JSONObject firstObject, JSONObject secondObject) {
+    private static int containTraceObjectNumber(JSONArray log, JSONObject trace) {
+        int i =0;
+        for (Object t : log) {
+            JSONObject traces = (JSONObject) t;
+            if (areTracesEqual(traces, trace)) {
+                return i;
+            }
+            i++;
+        }
+
+        return -1;
+    }
+
+    private static boolean areTracesEqual(JSONObject firstObject, JSONObject secondObject) {
+//        boolean equal= firstObject.get("routeIdxTo").equals(secondObject.get("routeIdxTo")) //todo update to this check for the trace
+//                && firstObject.get("routeIdxFrom").equals(secondObject.get("routeIdxFrom"))
+//                && firstObject.get("name").equals(secondObject.get("name"))
+//                && firstObject.get("line").equals(secondObject.get("line"))
+//                && firstObject.get("depTime").equals(secondObject.get("depTime"))
+//                && firstObject.get("depDate").equals(secondObject.get("depDate"));
         boolean equal= firstObject.get("routeIdxTo").equals(secondObject.get("routeIdxTo"))
                 && firstObject.get("routeIdxFrom").equals(secondObject.get("routeIdxFrom"))
-                && firstObject.get("name").equals(secondObject.get("name"))
-                && firstObject.get("depTime").equals(secondObject.get("depTime"))
-                && firstObject.get("depDate").equals(secondObject.get("depDate"));
+                && firstObject.get("line").equals(secondObject.get("line"))
+                && firstObject.get("name").equals(secondObject.get("name"));
         return equal;
     }
 

@@ -173,6 +173,8 @@ public class RejsePlanCall {
 //        JSONObjectTimeObject.clear();
         if (timeSeriesJSON.isEmpty()) {
             JSONObjectTimeObject.put("time", timeNow); //if it doesnt exist in the time-series object
+            JSONObjectTimeObject.put("time:timestamp", DateHelper.nowFull()); //if it doesnt exist in the time-series object
+
             JSONObjectTimeObject.put("raw_Data0", requestData);
 
         } else {
@@ -589,10 +591,10 @@ public class RejsePlanCall {
                 "noNamespaceSchemaLocation":"http://webapp.rejseplanen.dk/xml/rest/hafasRestJourneyDetail.xsd"
      Instead we add '[' as a start of a JSON object.
      */
-    private static String deleteFirstRow(String responseBody) {
-        responseBody = '{' + responseBody.substring(119);
-        return responseBody;
-    }
+//    private static String deleteFirstRow(String responseBody) {
+//        responseBody = '{' + responseBody.substring(119);
+//        return responseBody;
+//    }
     private static String deleteFirstChar(String responseBody) {
         responseBody = '{' + responseBody.substring(2);
         return responseBody;

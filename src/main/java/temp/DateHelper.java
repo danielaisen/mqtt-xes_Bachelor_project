@@ -18,6 +18,10 @@ public class DateHelper {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
             dateFormat.parse(time);
             myDate = dateFormat.parse(time);
+        }else if (time.length() == 22){
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmXXX");
+            dateFormat.parse(time);
+            myDate = dateFormat.parse(time);
         }else if (time.length() == 17){
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T' HH:mm");
             dateFormat.parse(time);
@@ -65,7 +69,7 @@ public class DateHelper {
         myDateString =  dateFormat.format(new Date());
         return myDateString;
     }
-    public String getNowFull() {
+    public static String nowFull() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         myDateString =  dateFormat.format(new Date());
         return myDateString;

@@ -212,7 +212,7 @@ public class RequestRespondCall {
     }
 
     static JSONObject getAndWriteLineByLineToTxt(File outPutFile, String urlIn) throws IOException {
-        BufferedReader reader;
+        BufferedReader reader; //todo clean up this method
         String line;
         String string = "";
 //        JSONObject jsonObject = new JSONObject();
