@@ -100,7 +100,7 @@ public class CreateXES_File {
         XTrace t2 = XLogHelper.insertTrace(logHelper, "case200");
 
         XEvent e21 = XLogHelper.insertEvent(t2, "A");
-        XLogHelper.decorateElement(e21, (String) "time:timesptamp", new Date());
+        XLogHelper.decorateElement(e21, (String) "time:timestamp", new Date());
 //        XEvent e22 = XLogHelper.insertEvent(t2, "B", new Date());
 //            for (int i = 0; i < 5; i++) {
 //                XLogHelper.insertEvent(t2, i + "B", new Date());

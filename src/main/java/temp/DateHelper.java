@@ -54,9 +54,13 @@ public class DateHelper {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd.yyyy");
         return dateFormat.parse((String) object);
     }
+    public static Date getDateYYYYMMDDHHMM(Object object) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+        return dateFormat.parse((String) object);
+    }
 
 
-    public String getNowShort() {
+    public static String nowShort() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mmXXX");
         myDateString =  dateFormat.format(new Date());
         return myDateString;

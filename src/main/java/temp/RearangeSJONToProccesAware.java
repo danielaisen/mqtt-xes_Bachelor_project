@@ -46,7 +46,7 @@ public class RearangeSJONToProccesAware {
             objectTimeSeries.remove("time");
 //            HashMap<String , String> myTEST = new HashMap<>();
 //            jsonObjectTimeSeriesOrdered.put("time",date);
-            V1jsonObjectTimeSeriesOrdered.put("time",date);
+            V1jsonObjectTimeSeriesOrdered.put("time:timestamp",date);
             for (Object key : objectTimeSeries.keySet()) {
 
                 if (j == 2) {
@@ -63,11 +63,8 @@ public class RearangeSJONToProccesAware {
 //                for (JSONObject a : eventAndTraceOrTopic) {
 //                    System.out.println(a);
 //                }
-                JSONObject trace = (JSONObject) V1eventAndTraceOrTopic.get(1);
-
-
-
                 JSONObject event = findRelevatStations((JSONArray) V1eventAndTraceOrTopic.get(0), date);
+                JSONObject trace = (JSONObject) V1eventAndTraceOrTopic.get(1);
 
 //                retrieveInformationFromObjectUSINGSIMPLE(null, event, myTEST); //not working jet. gather all the data.
 
