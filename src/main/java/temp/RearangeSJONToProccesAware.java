@@ -27,62 +27,44 @@ public class RearangeSJONToProccesAware {
     public static void main(String[] args) throws ParseException {
 
     JSONArray totallSumationOfAll = new JSONArray();
-    JSONArray traceIsForEachLine = new JSONArray();
-//    JSONObject finalReadyXESLineLog = new JSONObject();
-    JSONArray finalReadyXESLineLog = new JSONArray();
-//    finalReadyXESLineLog.put("XES_Type", "Log_Line_Log");
+    JSONArray finalReadyToXESTracesByLine = new JSONArray();
 
-    JSONArray jsonArrayTimeSeries = FilesHelper.readJSONArrayFile("timeSeriesJSON2");
+    JSONArray jsonArrayTimeSeries = FilesHelper.readJSONArrayFile("timeSeriesJSON3");
         for (Object object : jsonArrayTimeSeries) {
-//            JSONObject jsonObjectTimeSeriesOrdered = new JSONObject();
             JSONObject V1jsonObjectTimeSeriesOrdered = new JSONObject();
 
-
             JSONObject objectTimeSeries = (JSONObject) object;
-//            System.out.println(jsonArrayTimeSeries.size());
             Date date = DateHelper.getDate(objectTimeSeries.get("time"));
+            Date timeStamp = DateHelper.getDate(objectTimeSeries.get("time:timestamp"));
             objectTimeSeries.remove("time");
-//            HashMap<String , String> myTEST = new HashMap<>();
-//            jsonObjectTimeSeriesOrdered.put("time",date);
             V1jsonObjectTimeSeriesOrdered.put("time",date);
             for (Object key : objectTimeSeries.keySet()) {
                 if (key.equals("time:timestamp")) {
                     continue;
                 }
 
-
-//                String string = (objectTimeSeries.get(key)).toString();
-
-//                ArrayList<JSONObject> eventAndTraceOrTopic =parseRejsePlanReturnStopsAndTraceSimple(string);
-
-
                 ArrayList<Object> V1eventAndTraceOrTopic =V1parseRejsePlanReturnStopsAndTraceSimple((JSONObject) objectTimeSeries.get(key));
-//                for (JSONObject a : eventAndTraceOrTopic) {
-//                    System.out.println(a);
-//                }
                 JSONObject event = findRelevatStations((JSONArray) V1eventAndTraceOrTopic.get(0), date);
+                event.put("time:timestamp", timeStamp);
                 JSONObject trace = (JSONObject) V1eventAndTraceOrTopic.get(1);
 
-//                retrieveInformationFromObjectUSINGSIMPLE(null, event, myTEST); //not working jet. gather all the data.
-
-//                jsonObjectTimeSeriesOrdered.put(key, V1eventAndTraceOrTopic);
                 V1jsonObjectTimeSeriesOrdered.put(key+"_event0_trace_1", V1eventAndTraceOrTopic);
 
-                if (finalReadyXESLineLog.isEmpty()) {
+                if (finalReadyToXESTracesByLine.isEmpty()) {
                     JSONArray events = new JSONArray();
                     events.add(event);
                     trace.put("Events", events);
-                    finalReadyXESLineLog.add(trace);
+                    finalReadyToXESTracesByLine.add(trace);
                     continue;
                 }
-                int index = containTraceObjectNumber(finalReadyXESLineLog, trace);
+                int index = containTraceObjectNumber(finalReadyToXESTracesByLine, trace);
                 if (index == -1) {
                     JSONArray events = new JSONArray();
                     events.add(event);
                     trace.put("Events", events);
-                    finalReadyXESLineLog.add(trace);
+                    finalReadyToXESTracesByLine.add(trace);
                 } else {
-                    JSONObject thisTrace = (JSONObject) finalReadyXESLineLog.get(index);
+                    JSONObject thisTrace = (JSONObject) finalReadyToXESTracesByLine.get(index);
                     JSONArray events = (JSONArray) thisTrace.get("Events");
                     events.add(event);
                 }
@@ -90,25 +72,22 @@ public class RearangeSJONToProccesAware {
             }
 
             totallSumationOfAll.add(V1jsonObjectTimeSeriesOrdered);
-//            traceIsForEachLine.add(jsonObjectTimeSeriesOrdered);
-
         }
-        String nameFile = "traceByLine";
-        FilesHelper.createFileToJSONSimple(nameFile, finalReadyXESLineLog);
+        String nameFile = "traceByLineArray";
+        FilesHelper.createFileToJSONSimple(nameFile, finalReadyToXESTracesByLine);
+        String nameFile2 = "traceByLineObject";
+        JSONObject log = new JSONObject();
+        log.put("XES_Type", "log");
+        log.put("Traces", finalReadyToXESTracesByLine);
+        FilesHelper.createFileToJSONSimple(nameFile, log);
 
-        System.out.println("done RearangeSJONToProccesAware. Saved as " + nameFile);
+        System.out.println("done RearangeSJONToProccesAware. Saved as " + nameFile +", and " + nameFile2);
 
     }
 
 
     public static ArrayList<Object> V1parseRejsePlanReturnStopsAndTraceSimple(JSONObject journeyDetail) {
         ArrayList<Object> objects = new ArrayList<>();
-
-
-//        org.json.simple.JSONObject journeyDetail = (org.json.simple.JSONObject) mainJSONObject.get("JourneyDetail");
-//        List<String> namesJourneyDetail = new ArrayList<String>(journeyDetail.keySet());
-//        System.out.println(namesJourneyDetail); //todo delete this print
-
 
         HashMap<String, String> traceInfo = new HashMap<>();
         org.json.simple.JSONObject stopsObject = new org.json.simple.JSONObject();
@@ -117,7 +96,6 @@ public class RearangeSJONToProccesAware {
             if (keys.equals("Stop")) {
                 org.json.simple.JSONArray stops = (org.json.simple.JSONArray) journeyDetail.get("Stop");
                 V1arrangeStopData(stops);
-//                stopsObject.put("XES_Type", "Events"); //todo add activity name
                 objects.add(stops);
                 stopsObject.put("Events", stops);
             }
@@ -141,11 +119,6 @@ public class RearangeSJONToProccesAware {
 
 
     private static void V1arrangeStopData(org.json.simple.JSONArray stops) {
-//        System.out.print("updating the stop objects ");
-
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("MM.dd.yyyy");
-//        SimpleDateFormat dateFormatLong = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-
         for (int i = 0; i < stops.size(); i++) {
             org.json.simple.JSONObject stop = (org.json.simple.JSONObject) stops.get(i);
             List<String> stopAttributes = new ArrayList<String>(stop.keySet());
@@ -167,7 +140,6 @@ public class RearangeSJONToProccesAware {
                         arrivalDiff = V1cleaningMinutesAttribute(stop, attribute, "arrTime");
                         continue;
                     }
-
                     if (attribute.equals("rtDepTime")) {
                         departureDiff = V1cleaningMinutesAttribute(stop, attribute, "depTime");
                         continue;
@@ -183,12 +155,10 @@ public class RearangeSJONToProccesAware {
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-
             }
-            stop.put("time:timestamp", ""); //todo figure our time stamp in the original file creator
+//            stop.put("time:timestamp", ""); //todo figure our time stamp in the original file creator
             stop.put("Event_Name", "stop");
             stop.put("daysArrivalDiff", daysArrivalDiff);
-//            System.out.println();
             stop.put("arrivalDiff", arrivalDiff);
             stop.put("daysDepartureDiff", daysDepartureDiff);
             stop.put("departureDiff", departureDiff);
@@ -198,11 +168,8 @@ public class RearangeSJONToProccesAware {
     private static int V1cleaningMinutesAttribute(org.json.simple.JSONObject stop, String attribute, String depTime) throws ParseException {
         int departureDiff;
         Date firstDate = DateHelper.getDateHHMM(stop.get(attribute));
-//        Date firstDate = hoursMinFormat.parse((String) stop.get(attribute));
-//        Date secondDate = hoursMinFormat.parse((String) stop.get(depTime));
         Date secondDate = DateHelper.getDateHHMM(stop.get(depTime));
         departureDiff = (int) (TimeUnit.MINUTES.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()))); //60 second, 1000 mili seconds
-//        stop.remove(attribute);
         return departureDiff;
     }
 
@@ -213,16 +180,12 @@ public class RearangeSJONToProccesAware {
         s = (String) stop.get(depDate);
         Date secondDate = DateHelper.getDateMMDDYYYY(s.substring(0, 6) + "20" + s.substring(6));
         daysDepartureDiff = (int) TimeUnit.DAYS.convert(Duration.ofDays(firstDate.getTime() - secondDate.getTime()));
-//        stop.remove(attribute);
         return daysDepartureDiff;
     }
 
 
     private static JSONObject findRelevatStations(JSONArray stops, Date date) throws ParseException {
 
-        if (false) {
-            //todo add a check that it is the same calender date
-        }
         JSONObject event = new JSONObject();
         event.put("XES_Type", "Event");
         long time = DateHelper.getTimeValue(DateHelper.getDateHHMM(date));
@@ -311,9 +274,6 @@ public class RearangeSJONToProccesAware {
     }
 
     private static boolean areTracesEqual(JSONObject firstObject, JSONObject secondObject) {
-//        boolean equal= firstObject.get("routeIdxTo").equals(secondObject.get("routeIdxTo")) //todo update to this check for the trace
-//                && firstObject.get("routeIdxFrom").equals(secondObject.get("routeIdxFrom"))
-//                && firstObject.get("name").equals(secondObject.get("name"))
 
         boolean equal =  firstObject.get("depTime").equals(secondObject.get("depTime"))
                 && firstObject.get("arrTime").equals(secondObject.get("arrTime"))
@@ -336,6 +296,4 @@ public class RearangeSJONToProccesAware {
         }
         return equal;
     }
-
-
 }

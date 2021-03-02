@@ -28,10 +28,7 @@ import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class RejsePlanCall {
@@ -40,29 +37,33 @@ public class RejsePlanCall {
         org.json.simple.JSONArray timeSeriesJSONMain = new org.json.simple.JSONArray();
 
 //        double []findAverage = new double[3];
-        double time = 0;
+        double totallTime = 0;
         double numberOfStops = 0;
         double unValidUrl = 0;
 
+        String fileName =args[0];
+        args = Arrays.copyOfRange(args, 1, args.length);
+
         for (String url : args) {
             int []averegeTimeBetweenStops = getTimeIntervals(url);
-            time    =   time +averegeTimeBetweenStops[0]; //time
+            totallTime    =   totallTime +averegeTimeBetweenStops[0]; //time
             numberOfStops = numberOfStops + averegeTimeBetweenStops[1]; //number of stops
             unValidUrl = unValidUrl +averegeTimeBetweenStops[2]; //empty url
 
 
         }
         int numberOfcalls = args.length - (int) unValidUrl;
-        int fixed =8;
+        int fixed =5;
         int averageStops = (int) Math.ceil(numberOfStops/(numberOfcalls));
-        int minutesBetweenCalls = (int) Math.ceil(time/numberOfStops);
+        int minutesBetweenCalls = (int) Math.ceil(totallTime/numberOfStops);
 
-        int howManyCalls = fixed;
+        int howManyCalls = averageStops;
 
         System.out.printf("Received %d of journey options, out of them %d are valid. %n",
                  args.length, (int) (numberOfcalls));
         System.out.printf("There will be %d calls, with %d minutes (fixed time) waiting between them. In total this task will take: %d minutes %n"
                 , howManyCalls, minutesBetweenCalls, (howManyCalls-1)*minutesBetweenCalls);
+        System.out.println("The time now is" + DateHelper.nowShort());
         for (int i = 0; i < howManyCalls; i++) {
             for (String uri : args) {
 
@@ -74,7 +75,7 @@ public class RejsePlanCall {
             }
         }
 
-        FilesHelper.createFileToJSONSimple("timeSeriesJSON2", timeSeriesJSONMain);
+        FilesHelper.createFileToJSONSimple(fileName, timeSeriesJSONMain);
 
 //        if (false) {
 //            old(args);
@@ -190,6 +191,7 @@ public class RejsePlanCall {
                 }
                 if (!found) {
                     JSONObjectTimeObject.put("time", timeNow);
+                    JSONObjectTimeObject.put("time:timestamp", DateHelper.nowFull());
                 }
                 int j = JSONObjectTimeObject.size()-1;
                 JSONObjectTimeObject.put("raw_Data" +j, requestData);

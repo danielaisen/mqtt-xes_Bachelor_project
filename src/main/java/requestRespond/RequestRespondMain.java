@@ -56,6 +56,9 @@ public class RequestRespondMain {
         urlList.remove(0);
         urlList.remove(0);
 
+        String fileName = "timeSeriesJSON3";
+        urlList.add(0,fileName);
+
         String[] urls = urlList.toArray(new String[0]);
 
         if (urls.length > 6) {
@@ -64,6 +67,7 @@ public class RequestRespondMain {
         for (String url : urls) {
             System.out.println("getting the information from: \n" + url);
         }
+
         RejsePlanCall.main(urls);
 
         System.exit(333);
