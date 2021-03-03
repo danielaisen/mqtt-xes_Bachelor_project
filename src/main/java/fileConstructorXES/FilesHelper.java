@@ -22,11 +22,9 @@ public class FilesHelper {
     public Path path;
     public String name;
     public File file;
-//    XesMqttEvent e;
     public FilesHelper(String name){
         this.path = Paths.get("").toAbsolutePath();
         createFile(name);
-//        XesMqttEvent e = new XesMqttEvent("me", "trying","mybest");
 
     }
 
@@ -89,7 +87,6 @@ public class FilesHelper {
         return jsonArray;
     }
 
-
     private void createFile(String name) {
         this.name = name;
 
@@ -110,6 +107,5 @@ public class FilesHelper {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-
     }
 }
