@@ -101,7 +101,7 @@ public class FilesHelper {
                 this.file = myObj;
 
             } else {
-                System.out.println("File already exists.");
+                System.out.printf("File %s already exists. \n", name);
                 this.path = Paths.get(name).toAbsolutePath();
                 this.file = myObj;
             }
