@@ -143,36 +143,36 @@ public class XLogHelper {
 
 
 
-//    /**
-//     * This method creates a new {@link XEvent} referring to the given activity
-//     * name, occurred at the given time. The event is added to the given trace,
-//     * and returned
-//     *
-//     * @param trace the trace that is going to host the new event
-//     * @param activityName the name of the activity the new event is going to
-//     * refer to
-//     * @param timestamp the time the new event occurred
-//     * @return the new event created, or <tt>null</tt> if the given trace is
-//     * not valid
-//     */
-//    public static XEvent insertEvent(XTrace trace, String activityName, Date timestamp) {
-//        if (trace == null) {
-//            return null;
-//        }
-//        XEvent e = xesFactory.createEvent();
-//        decorateElement(e, "concept:name", activityName, "Concept");
-//        decorateElement(e, "time:timestamp", timestamp, "Time");
-//        trace.insertOrdered(e);
-//        return e;
-//    }
-    public static XEvent insertEvent(XTrace trace, String activityName) {
+    /**
+     * This method creates a new {@link XEvent} referring to the given activity
+     * name, occurred at the given time. The event is added to the given trace,
+     * and returned
+     *
+     * @param trace the trace that is going to host the new event
+     * @param activityName the name of the activity the new event is going to
+     * refer to
+     * @param timestamp the time the new event occurred
+     * @return the new event created, or <tt>null</tt> if the given trace is
+     * not valid
+     */
+    public static XEvent insertEvent(XTrace trace, String activityName, Date timestamp) {
         if (trace == null) {
             return null;
         }
         XEvent e = xesFactory.createEvent();
         decorateElement(e, "concept:name", activityName, "Concept");
+        decorateElement(e, "time:timestamp", timestamp, "Time");
+        trace.insertOrdered(e);
         return e;
     }
+//    public static XEvent insertEvent(XTrace trace, String activityName) {
+//        if (trace == null) {
+//            return null;
+//        }
+//        XEvent e = xesFactory.createEvent();
+//        decorateElement(e, "concept:name", activityName, "Concept");
+//        return e;
+//    }
 
 
     /**

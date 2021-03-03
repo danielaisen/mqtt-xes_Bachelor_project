@@ -57,13 +57,13 @@ public class RejsePlanCall {
         int averageStops = (int) Math.ceil(numberOfStops/(numberOfcalls));
         int minutesBetweenCalls = (int) Math.ceil(totallTime/numberOfStops);
 
-        int howManyCalls = averageStops;
+        int howManyCalls = fixed;
 
         System.out.printf("Received %d of journey options, out of them %d are valid. %n",
                  args.length, (int) (numberOfcalls));
         System.out.printf("There will be %d calls, with %d minutes (fixed time) waiting between them. In total this task will take: %d minutes %n"
                 , howManyCalls, minutesBetweenCalls, (howManyCalls-1)*minutesBetweenCalls);
-        System.out.println("The time now is" + DateHelper.nowShort());
+        System.out.println("The time now is " + DateHelper.nowShort());
         for (int i = 0; i < howManyCalls; i++) {
             for (String uri : args) {
 

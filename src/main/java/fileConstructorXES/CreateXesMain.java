@@ -9,11 +9,11 @@ import org.json.simple.JSONObject;
 
 import java.io.FileNotFoundException;
 
-public class TempMain {
+public class CreateXesMain {
 
 
     public static void main(String[] args) throws FileNotFoundException, java.text.ParseException {
-        String fileReader = "traceByLine";
+        String fileReader = "traceByLineObject";
 
         JSONObject jsonObject = FilesHelper.readJSONObjectFile(fileReader);
 

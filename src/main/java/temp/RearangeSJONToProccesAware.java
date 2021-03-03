@@ -35,7 +35,7 @@ public class RearangeSJONToProccesAware {
 
             JSONObject objectTimeSeries = (JSONObject) object;
             Date date = DateHelper.getDate(objectTimeSeries.get("time"));
-            Date timeStamp = DateHelper.getDate(objectTimeSeries.get("time:timestamp"));
+            Object timeStamp = objectTimeSeries.get("time:timestamp");
             objectTimeSeries.remove("time");
             V1jsonObjectTimeSeriesOrdered.put("time",date);
             for (Object key : objectTimeSeries.keySet()) {
@@ -79,7 +79,7 @@ public class RearangeSJONToProccesAware {
         JSONObject log = new JSONObject();
         log.put("XES_Type", "log");
         log.put("Traces", finalReadyToXESTracesByLine);
-        FilesHelper.createFileToJSONSimple(nameFile, log);
+        FilesHelper.createFileToJSONSimple(nameFile2, log);
 
         System.out.println("done RearangeSJONToProccesAware. Saved as " + nameFile +", and " + nameFile2);
 
@@ -156,7 +156,7 @@ public class RearangeSJONToProccesAware {
                     e.printStackTrace();
                 }
             }
-//            stop.put("time:timestamp", ""); //todo figure our time stamp in the original file creator
+            stop.put("time:timestamp", ""); //todo figure our time stamp in the original file creator
             stop.put("Event_Name", "stop");
             stop.put("daysArrivalDiff", daysArrivalDiff);
             stop.put("arrivalDiff", arrivalDiff);
@@ -199,17 +199,17 @@ public class RearangeSJONToProccesAware {
             if (i == 0) {
                 depTime = DateHelper.getTimeValue(((JSONObject) stops.get(0)).get("depTime"));
                 if (depTime > time) {
-                    event.put("status_", "Did not departure");
+                    event.put("Status_", "Did not departure");
                     event.put("Event_name", "Did not departure");
-                    event.put("name_station",((JSONObject) stops.get(0)).get("name"));
-                    event.put("Original_Data_Stop", stops.get(0));
+                    event.put("Name_station",((JSONObject) stops.get(0)).get("name"));
+                    event.put("Original_data_Stop", stops.get(0));
                     break;
                 }
             } else if (i == stops.size() - 1) {
-                event.put("status_", "Finish journey");
+                event.put("Status_", "Finish journey");
                 event.put("Event_name", "Is not on route");
-                event.put("name_station",((JSONObject) stops.get(stops.size()-1)).get("name"));
-                event.put("Original_Data_Stop", stops.get(stops.size()-1));
+                event.put("Name_station",((JSONObject) stops.get(stops.size()-1)).get("name"));
+                event.put("Original_data_Stop", stops.get(stops.size()-1));
             } else {
                 if (((JSONObject) stops.get(i + 1)).get("arrTime") == null
                     || ((JSONObject) stops.get(i - 1)).get("depTime") == null
@@ -224,7 +224,7 @@ public class RearangeSJONToProccesAware {
                     arrTime = DateHelper.getTimeValue(((JSONObject) stops.get(i)).get("arrTime"));
 
                     if (arrTime > time) {
-                        event.put("status_", "On the way");
+                        event.put("Status_", "On the way");
 
                         long arrivalDiff = Long.valueOf((int)((JSONObject) stops.get(i)).get("arrivalDiff"));
                         if (arrivalDiff == 0) {
@@ -234,11 +234,11 @@ public class RearangeSJONToProccesAware {
                         } else if (arrivalDiff < 0) {
                             event.put("Event_name", "Arriving earlier");
                         }
-                        event.put("name_station", ((JSONObject) stops.get(i)).get("name"));
-                        event.put("Original_Data_Stop", stops.get(i));
+                        event.put("Name_station", ((JSONObject) stops.get(i)).get("name"));
+                        event.put("Original_data_stop", stops.get(i));
                         break;
                     } else if (time <= depTime) {
-                        event.put("status_", "At station");
+                        event.put("Status_", "At station");
 
                         long arrivalDiff = Long.valueOf((int)((JSONObject) stops.get(i)).get("arrivalDiff"));
                         if (arrivalDiff == 0) {
@@ -248,8 +248,8 @@ public class RearangeSJONToProccesAware {
                         } else if (arrivalDiff < 0) {
                             event.put("Event_name", "Arrived earlier");
                         }
-                        event.put("name_station", ((JSONObject) stops.get(i)).get("name"));
-                        event.put("Original_Data_Stop", stops.get(i));
+                        event.put("Name_station", ((JSONObject) stops.get(i)).get("name"));
+                        event.put("Original_data_stop", stops.get(i));
                         break;
                     }
 

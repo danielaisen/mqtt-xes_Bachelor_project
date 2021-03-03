@@ -76,11 +76,6 @@ public class DateHelper {
     }
 
 
-    public Date shortDate(Object time) {
-
-        Date date  = new Date();
-        return myDate;
-    }
 
     public static long getTimeValue(Object s) throws ParseException {
         if (s instanceof Date) {

@@ -178,7 +178,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>mqttxes.Publisher</mainClass>
+							<mainClass>mqttxes.PublisherXES</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>
