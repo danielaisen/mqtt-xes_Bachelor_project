@@ -37,51 +37,11 @@ public class CreateXES_File {
         Path path = Paths.get("").toAbsolutePath();
         fileXESGZ = new FileOutputStream(path  +"\\testFolder" +"\\" +fileName + ".xes.gz");
         fileXES = new FileOutputStream(path  +"\\testFolder" +"\\" +fileName + ".xes");
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
-        Date a = new Date();
-//    public static void main(String[] args) throws IOException {
-//        String name = (String) jsonObject.get("XES_Type");
         XLog logHelper = XLogHelper.generateNewXLog("log");
-//
-//        fileXESGZ = new FileOutputStream("a" + ".xes.gz");
-//        fileXES = new FileOutputStream("a" + ".xes");
 
-int debug =0;
-
-//        XTrace xTrace = null;
-//        XEvent xEvent;
         int caseID =0;
         JSONArray jsonArray = (JSONArray) jsonObject.get("Traces");
-
-//        System.out.println("adding test stuff"); //todo delete this line
-//
-//
-//        XTrace t1 = XLogHelper.insertTrace(logHelper, "case100");
-//        XEvent e11 = XLogHelper.insertEvent(t1, "X", new Date());
-//        XEvent e12 = XLogHelper.insertEvent(t1, "X", new Date());
-//
-//        XTrace t2 = XLogHelper.insertTrace(logHelper, "case200");
-//
-////        JSONObject jsonObjectEvent1234 = (JSONObject) ((JSONArray) ((JSONObject) jsonArray.get(0)).get("Events")).get(0);
-//        Date timestamp1234 = DateHelper.getDate(jsonObjectEvent1234.get("time:timestamp"));
-//        XEvent e1 = XLogHelper.insertEvent(t1, (String) jsonObjectEvent1234.get("Event_name"),timestamp1234);
-//        XLogHelper.insertEvent(t1, (String) jsonObjectEvent1234.get("Event_name"),timestamp1234);
-//        XEvent e231 = XLogHelper.insertEvent(t2, (String) jsonObjectEvent1234.get("Event_name"),timestamp1234);
-//        e231 = XLogHelper.insertEvent(t2, (String) jsonObjectEvent1234.get("Event_name"),new Date());
-//        XEvent e21 = XLogHelper.insertEvent(t2, "A", timestamp1234);
-//        XLogHelper.decorateElement(e21, (String) "time:timestamp", new Date());
-//        XEvent e22 = XLogHelper.insertEvent(t2, "B", new Date());
-////        for (int i = 0; i < 5; i++) {
-////            XLogHelper.insertEvent(t2, i + "B", new Date());
-////
-////            XLogHelper.insertEvent(t1, i+ "B", new Date(2021,02,20));
-////
-////            XLogHelper.insertEvent(t1, i + "A", new Date());
-////
-////
-////        }
-////        System.out.println("finsinh adding test stuff");
 
 
         for (int i = 0; i < jsonArray.size(); i++) {
@@ -93,8 +53,6 @@ int debug =0;
                     if (keysTraceData.equals("Events")) {
                         JSONArray jsonArrayEvents = (JSONArray) JSONObject_TraceWithEvents.get(keysTraceData);
                         for (int j = 0; j < jsonArrayEvents.size(); j++) {
-
-//                            System.out.println(debug);debug++;
 
                             JSONObject jsonObjectEvent = (JSONObject) jsonArrayEvents.get(j);
                             Date timestamp = DateHelper.getDate(jsonObjectEvent.get("time:timestamp"));
@@ -127,14 +85,8 @@ int debug =0;
             }
         }
 
-
-
-
-
-
         XesXmlSerializer serializer = new XesXmlSerializer();
         XesXmlGZIPSerializer xesXmlGZIPSerializer = new XesXmlGZIPSerializer();
-
 
             try {
                 serializer.serialize(logHelper, fileXES);

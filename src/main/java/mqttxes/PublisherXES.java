@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import fileConstructorXES.FilesHelper;
 import mqttxes.lib.UpdatedPublisher;
 //import mqttxes.lib.XesMqttProducer;
 import org.deckfour.xes.extension.std.XConceptExtension;
@@ -21,6 +22,20 @@ import org.deckfour.xes.model.XTrace;
 import mqttxes.lib.XesMqttEvent;
 //import mqttxes.lib.XesMqttProducer;
 
+
+
+/**
+ * This class and its main method publish events that are in the log.
+ * It is done by an mqtt Hive-MQ library.
+ * They are published based on their timestamp.
+ *
+ * The main method needs the following arguments to initialized:
+ * [0] XES.GZ file - the log that the program should be running.
+ * [1] minutes - the wished interval time for the running the log.
+ *
+ * If the wished interval is longer than the original, the original time is kept.
+ */
+
 public class PublisherXES {
 
 	private static XFactory factory = new XFactoryNaiveImpl();
@@ -28,55 +43,47 @@ public class PublisherXES {
 	public static void main(String[] args) throws Exception {
 
 		if (args.length != 2) {
-			System.out.println("Use java -jar mqtt-xes.jar LOG.XES.GZ MILLISECONDS");
+			System.out.println("Use java -jar mqtt-xes.jar LOG.XES.GZ Minutes");
 			System.exit(1);
 		}
 
-
 		System.out.print("Parsing log... ");
-		XLog log = new XesXmlGZIPParser(factory).parse(new File(args[0])).get(0);
 
-		String logName = XConceptExtension.instance().extractName(log);
-
-		logName = UpdatedPublisher.containsWildCards(logName);
-
-		System.out.println("Done");
-
+		String fileName = FilesHelper.addPathXESGZ(args[0]);
+		XLog log = new XesXmlGZIPParser(factory).parse(new File(fileName)).get(0);
 		List<XTrace> traces = log2events(log);
 
+		String logName = XConceptExtension.instance().extractName(log);
+		logName = UpdatedPublisher.checkForWildCards(logName);
+
+		System.out.println("Done");
 
 
 		XTrace firstTrace = traces.get(0);
 		Date startDate = event_handler(logName, firstTrace).getTime();
 		XTrace lastTrace = traces.get(traces.size()-1);
+        Date lastDate = event_handler(logName, lastTrace).getTime();
 
-        Date lastDate = event_handler(logName, lastTrace).getTime();;
-//        int diffInMillis2 = time_interval(startDate, lastDate, dividingTime);
-//        System.out.println(diffInMillis2 + "/n");
         int wishedInterval = Integer.parseInt(args[1]);
-
         float dividingTime = wishedTime(wishedInterval, startDate, lastDate);
 
 		System.out.print("Streaming... ");
 		UpdatedPublisher client = new UpdatedPublisher("daniel1");
 
-		System.out.printf("start. There will be: %d traces", traces.size());
+		System.out.printf("start. There will be: %d events \n", traces.size());
 		client.connect();
 		int i = 0 ;
 		for (XTrace trace : traces) { //todo Figure out why it doesnt send the first element
-			System.out.printf("trace number %d is running. %n" ,i); //todo do i need this?
+			System.out.printf("event number %d is running. %n" ,i); //todo do i need this?
 			XesMqttEvent event = event_handler(logName, trace);
 
 			Date secondDate = event.getTime();
-//			System.out.println(secondDate);
 			int diffInMillis = time_interval(startDate, secondDate, dividingTime);
 			startDate = secondDate;
-//			System.out.println(diffInMillis);
 
 			event.removeEventAttribute("time:timestamp");
 			client.send(Integer.toString(i));//todo do i need this?
 			client.send(event); //todo create an option to separate between different topics
-//			Thread.sleep(millis);
 			Thread.sleep(diffInMillis);//todo ensure the KeepAlive specification go hand in hand with the sleeping time
 //			client.connect(); //todo not totally sure if this is needed
 			i++; //todo do i need this?
@@ -100,7 +107,7 @@ public class PublisherXES {
         if (timeDays > 50) {
             long month = (long) (timeDays/30.436875);
             timeDays = (long)  (timeDays % 30.436875);
-            time = "The original log is about: " + month + " months, and " + timeDays + " days."; //, " + hours % 24 + ": hours, " + minutes % 60 + ": minutes, and " + seconds % 60 + ": seconds ";
+            time = "The original log is about: " + month + " months, and " + timeDays + " days.";
         }
         else{
             time ="The original log is: " + timeDays + " days, " + timeHours % 24 + " hours, " + timeMinutes % 60 + " minutes, and " + timeSeconds % 60 + " seconds";
@@ -119,13 +126,7 @@ public class PublisherXES {
 		}
 
         String message = "To receive the wished time interval the original time between the event will be divided by: " + dividingTime;
-
         System.out.println(message);
-//        if (originalTimeInterval / dividingTime != wishedIntervalMilliseconds) {
-//            System.out.print(originalTimeInterval / dividingTime+ " ");
-//            System.out.println(wishedIntervalMilliseconds);
-//            System.exit(100);
-//        }
 	    return dividingTime;
     }
 
@@ -147,7 +148,6 @@ public class PublisherXES {
 		String caseId = XConceptExtension.instance().extractName(trace);
 		String activity = XConceptExtension.instance().extractName(trace.get(0));
 		XesMqttEvent event = new XesMqttEvent(logName, caseId, activity);
-
 		event.addAllTraceAttributes(trace.getAttributes());
 		event.addAllEventAttributes(trace.get(0).getAttributes());
 		return event;

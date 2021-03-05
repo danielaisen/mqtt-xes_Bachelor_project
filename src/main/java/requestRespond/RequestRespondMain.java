@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * @author Daniel Max Aisen (s171206)
+ *
+ * the attribute value
  **/
 
 public class RequestRespondMain {
@@ -18,6 +20,8 @@ public class RequestRespondMain {
 
         String rejsePlan = "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?id=8600626&format=json";
 //        String wiki =  "https://stream.wikimedia.org/v2/stream/recentchange";
+
+//        String name = args[0];
 
         String name1= "callForFindingRouts";
         FilesHelper file1 = new FilesHelper(name1);
@@ -38,7 +42,7 @@ public class RequestRespondMain {
 
         String[] urls = urlList.toArray(new String[0]);
 
-        if (urls.length > 6) {
+        if (urls.length > 6) { //todo change to the size of it
             urls = Arrays.copyOfRange(urls, 0, 6);
         }
         for (String url : urls) {

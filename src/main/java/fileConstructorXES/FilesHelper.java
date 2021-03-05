@@ -87,6 +87,12 @@ public class FilesHelper {
         return jsonArray;
     }
 
+    public static String addPathXESGZ(String fileName) {
+        Path path = Paths.get("").toAbsolutePath();
+        String fullPath = path + "\\testFolder" + "\\"  + fileName +".xes.gz";
+        return fullPath;
+    }
+
     private void createFile(String name) {
         this.name = name;
 

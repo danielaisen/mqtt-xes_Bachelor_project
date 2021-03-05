@@ -3,9 +3,6 @@
  **/
 
 package fileConstructorXES;
-/**
- * @author Daniel Max Aisen (s171206)
- **/
 
 import org.deckfour.xes.extension.XExtensionManager;
 import org.deckfour.xes.extension.std.XConceptExtension;
