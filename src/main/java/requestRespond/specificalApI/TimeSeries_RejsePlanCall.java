@@ -5,7 +5,6 @@
 package requestRespond.specificalApI;
 
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import fileConstructorXES.FilesHelper;
 import temp.DateHelper;
@@ -17,41 +16,40 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class RejsePlanCall {
+public class TimeSeries_RejsePlanCall {
 
-    public static void main(String[] args) throws InterruptedException, ParseException, org.json.simple.parser.ParseException {
-        org.json.simple.JSONArray timeSeriesJSONMain = new org.json.simple.JSONArray();
+    public static void main(String[] urls) throws InterruptedException, ParseException, org.json.simple.parser.ParseException {
+        org.json.simple.JSONArray timeSeriesJSONMain = new org.json.simple.JSONArray(); //todo change it to be a variable going in
 
-//        double []findAverage = new double[3];
-        double totallTime = 0;
+        String fileName =urls[0];
+        urls = Arrays.copyOfRange(urls, 1, urls.length);
+
+        double totalTime = 0;
         double numberOfStops = 0;
-        double unValidUrl = 0;
+        double inValidUrl = 0;
 
-        String fileName =args[0];
-        args = Arrays.copyOfRange(args, 1, args.length);
-
-        for (String url : args) {
-            int []averegeTimeBetweenStops = getTimeIntervals(url);
-            totallTime    =   totallTime +averegeTimeBetweenStops[0]; //time
-            numberOfStops = numberOfStops + averegeTimeBetweenStops[1]; //number of stops
-            unValidUrl = unValidUrl +averegeTimeBetweenStops[2]; //empty url
-
-
+        for (String url : urls) {
+            int []timeStopsInvalid = getTimeIntervals(url);
+            totalTime    =   totalTime +timeStopsInvalid[0];
+            numberOfStops = numberOfStops + timeStopsInvalid[1];
+            inValidUrl = inValidUrl +timeStopsInvalid[2];
         }
-        int numberOfcalls = args.length - (int) unValidUrl;
-        int fixed =5;
-        int averageStops = (int) Math.ceil(numberOfStops/(numberOfcalls));
-        int minutesBetweenCalls = (int) Math.ceil(totallTime/numberOfStops);
 
+        int numberOfValid = urls.length - (int) inValidUrl;
+        int averageStops = (int) Math.ceil(numberOfStops/(numberOfValid));
+        int minutesBetweenCalls = (int) Math.ceil(totalTime/numberOfStops);
+
+        int fixed =2;
         int howManyCalls = fixed;
 
         System.out.printf("Received %d of journey options, out of them %d are valid. %n",
-                 args.length, (int) (numberOfcalls));
+                 urls.length, (numberOfValid));
         System.out.printf("There will be %d calls, with %d minutes (fixed time) waiting between them. In total this task will take: %d minutes %n"
                 , howManyCalls, minutesBetweenCalls, (howManyCalls-1)*minutesBetweenCalls);
         System.out.println("The time now is " + DateHelper.nowShort());
+
         for (int i = 0; i < howManyCalls; i++) {
-            for (String uri : args) {
+            for (String uri : urls) {
 
                 timeSeriesJSONMain = timeSeriesJSON(timeSeriesJSONMain, uri);
             }
@@ -103,28 +101,36 @@ public class RejsePlanCall {
 
     private static void checkTimeExistenceAndAdd(org.json.simple.JSONObject requestData, org.json.simple.JSONArray timeSeriesJSON, String timeNow) {
         org.json.simple.JSONObject JSONObjectTimeObject = new org.json.simple.JSONObject();
+        org.json.simple.JSONArray JSONArrayDataArray = new org.json.simple.JSONArray();
         if (timeSeriesJSON.isEmpty()) {
             JSONObjectTimeObject.put("time", timeNow); //if it doesnt exist in the time-series object
-            JSONObjectTimeObject.put("time:timestamp", DateHelper.nowFull()); //if it doesnt exist in the time-series object
-            JSONObjectTimeObject.put("raw_Data0", requestData);
+            requestData.put("time:timestamp", DateHelper.nowFull());
+            JSONArrayDataArray.add(requestData);
+            JSONObjectTimeObject.put("raw_data", JSONArrayDataArray);
 
         } else {
             Boolean found = false;
-            while (! found) {
+            while (!found) {
                 for(int i = 0; i < timeSeriesJSON.size(); i++) {
                     if (found = ((org.json.simple.JSONObject) timeSeriesJSON.get(i)).get("time").equals(timeNow)) {
-
                         JSONObjectTimeObject = (org.json.simple.JSONObject) timeSeriesJSON.get(i);
+                        JSONArrayDataArray = (org.json.simple.JSONArray) JSONObjectTimeObject.get("raw_data");
+                        JSONArrayDataArray.add(requestData);
                         timeSeriesJSON.remove(i);
                         break;
                     }
                 }
                 if (!found) {
                     JSONObjectTimeObject.put("time", timeNow);
+
+                    requestData.put("time:timestamp", DateHelper.nowFull());
+                    JSONArrayDataArray.add(requestData);
+                    JSONObjectTimeObject.put("raw_data", JSONArrayDataArray);
+
                     JSONObjectTimeObject.put("time:timestamp", DateHelper.nowFull());
                 }
                 int j = JSONObjectTimeObject.size()-1;
-                JSONObjectTimeObject.put("raw_Data" +j, requestData);
+                JSONObjectTimeObject.put("raw_data" +j, requestData);
                 break;
             }
         }
@@ -145,7 +151,6 @@ public class RejsePlanCall {
         return s;
     }
 
-
     private static org.json.simple.JSONObject extractRequestIntoJSON(String responseBody) throws org.json.simple.parser.ParseException {
         String refinedRespond = deleteFirstChar(responseBody);
 //        System.out.println(refinedRespond);//todo delete this print
@@ -158,57 +163,6 @@ public class RejsePlanCall {
         return (org.json.simple.JSONObject) mainJSONobject.get("JourneyDetail");
     }
 
-
-
-    public static void retrieveInformationFromObject(String keys, Object original, HashMap<String, String> traceInfo) {
-        if (original instanceof String) {
-            if (traceInfo.containsKey(keys)) {
-                if (!traceInfo.get(keys).equals(original)) {
-                    traceInfo.put(keys + "_addition", (String) original);
-                }else { } //do nothing
-            }
-            else{
-                traceInfo.put(keys, (String) original);
-            }
-            traceInfo.put(keys, (String) original);
-        }
-        else if (original instanceof JSONObject) {
-            JSONObject jsonObject = (JSONObject) original;
-            for (String key : jsonObject.keySet()) {
-                retrieveInformationFromObject(key, jsonObject.get(key), traceInfo);
-
-            }
-        }
-        else if (original instanceof JSONArray) {
-
-            for (Object object : (JSONArray) original) {
-                if (!(object instanceof JSONObject)) {
-                    retrieveInformationFromObject(String.valueOf(object.getClass()),object, traceInfo);
-                }
-                retrieveInformationFromObject(null, object, traceInfo);
-            }
-
-        }
-        else if (original instanceof ArrayList) {
-            System.out.println("\n inside the retrieveInformationFromObject object found" + original.getClass());
-
-            System.exit(1001);
-        }
-        else if (original instanceof HashMap) {
-
-            HashMap hashMap = (HashMap) original;
-            for (Object key : hashMap.keySet()) {
-
-                retrieveInformationFromObject((String) key, hashMap.get(key), traceInfo);
-            }
-
-        }
-        else{
-            System.out.println("\n error has occur in retrieveInformationFromObject method");
-            System.out.println(original.getClass() + " has been found instead");
-            System.exit(1002);
-        }
-    }
     public static void retrieveInformationFromObjectUSINGSIMPLE(Object keys, Object original, HashMap<String, String> traceInfo) {
         if (original instanceof String) {
             if (traceInfo.containsKey(keys)) {
@@ -247,7 +201,7 @@ public class RejsePlanCall {
             HashMap hashMap = (HashMap) original;
             for (Object key : hashMap.keySet()) {
 
-                retrieveInformationFromObject((String) key, hashMap.get(key), traceInfo);
+                retrieveInformationFromObjectUSINGSIMPLE(key, hashMap.get(key), traceInfo);
             }
         } else if (original == null) {
             System.out.println();

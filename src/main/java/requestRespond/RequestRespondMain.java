@@ -2,7 +2,7 @@ package requestRespond;
 
 import fileConstructorXES.FilesHelper;
 import org.json.JSONObject;
-import requestRespond.specificalApI.RejsePlanCall;
+import requestRespond.specificalApI.TimeSeries_RejsePlanCall;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +49,7 @@ public class RequestRespondMain {
             System.out.println("getting the information from: \n" + url);
         }
 
-        RejsePlanCall.main(urls);
+        TimeSeries_RejsePlanCall.main(urls);
 
 //        RequestRespondCall.getAndWriteLineByLineToTxt(new FilesHelper("forWiki").file, wiki);
 

@@ -3,12 +3,9 @@ package temp;
 import fileConstructorXES.FilesHelper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 
-import javax.json.JsonObject;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static requestRespond.specificalApI.RejsePlanCall.*;
+import static requestRespond.specificalApI.TimeSeries_RejsePlanCall.*;
 
 /**
  * @author Daniel Max Aisen (s171206)
