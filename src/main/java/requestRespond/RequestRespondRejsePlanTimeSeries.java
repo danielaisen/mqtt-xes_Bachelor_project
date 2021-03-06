@@ -17,6 +17,8 @@ public class RequestRespondRejsePlanTimeSeries {
 
     public static void main(String[] args) throws Exception { //todo add the option to work with &format=xml
 
+        System.out.println("making a call to RejsePlan");
+
         int callsForEachUrl = 1;
         String fileName = "timeSeriesJSON3";
         int limitRoutes = 4;
@@ -59,7 +61,7 @@ public class RequestRespondRejsePlanTimeSeries {
             FilesHelper.createFileToJSONSimple(fileName, timeSeriesJSONMain);
         }
 
-
+        System.out.println("Done call to rejsePlan");
 
 //        String wiki =  "https://stream.wikimedia.org/v2/stream/recentchange";
 //        RequestRespondCall.getAndWriteLineByLineToTxt(new FilesHelper("forWiki").file, wiki);

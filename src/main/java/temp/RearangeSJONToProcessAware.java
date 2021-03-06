@@ -19,9 +19,11 @@ import java.util.concurrent.TimeUnit;
  * @author Daniel Max Aisen (s171206)
  **/
 
-public class RearangeSJONToProccesAware {
+public class RearangeSJONToProcessAware {
 
     public static void main(String[] args) throws ParseException {
+        System.out.println("Making a call to rearranging json to process aware");
+
         String readFile = "timeSeriesJSON3";
         String nameFile2 = "traceByLineObject";
 //        JSONArray totallSumationOfAll = new JSONArray();
@@ -81,7 +83,8 @@ public class RearangeSJONToProccesAware {
         log.put("Traces", finalReadyToXESTracesByLine);
         FilesHelper.createFileToJSONSimple(nameFile2, log);
 
-        System.out.println("done RearangeSJONToProccesAware. Saved as "  + nameFile2);
+        System.out.println("done RearangeSJONToProcessAware. Saved as "  + nameFile2);
+        System.out.println("Done with call to rearranging json to process aware");
 
     }
 

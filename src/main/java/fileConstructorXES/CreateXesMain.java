@@ -14,6 +14,8 @@ public class CreateXesMain {
 
 
     public static void main(String[] args) throws FileNotFoundException, java.text.ParseException {
+        System.out.println("Staring with creating of the XES log");
+
         String fileReader = "traceByLineObject";
         String fileNameXes = "file_XES2";
 
@@ -27,7 +29,7 @@ public class CreateXesMain {
 
         new CreateXES_File(fileNameXes, jsonObject);
 
-
+        System.out.println("Done with creating of the XES log");
     }
 
 }

@@ -41,6 +41,7 @@ public class PublisherXES {
 	private static XFactory factory = new XFactoryNaiveImpl();
 
 	public static void main(String[] args) throws Exception {
+		System.out.println("Staring call to publish the log");
 
 		if (args.length != 2) {
 //			System.out.println("Use java -jar mqtt-xes.jar LOG.XES.GZ Minutes");
@@ -91,8 +92,8 @@ public class PublisherXES {
 
 		}
 		client.disconnect();
-		System.out.println("done");
-		System.exit(2);
+		System.out.println("Done with the call to publish the log");
+//		System.exit(2);
 
 	}
 

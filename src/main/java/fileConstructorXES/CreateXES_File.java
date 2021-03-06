@@ -37,7 +37,6 @@ public class CreateXES_File {
         int caseID =0;
         JSONArray jsonArray = (JSONArray) jsonObject.get("Traces");
 
-
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject JSONObject_TraceWithEvents = (JSONObject) jsonArray.get(i);
             if (JSONObject_TraceWithEvents.get("XES_Type").equals("Trace_Info")) {
@@ -66,11 +65,18 @@ public class CreateXES_File {
                                     continue;
                                 }
                                 String value = String.valueOf(jsonObjectEvent.get(attributeName));
-                                XLogHelper.decorateElement(xEvent, (String) attributeName, value);
+                                if (value != null) {
+                                    XLogHelper.decorateElement(xEvent, (String) attributeName, value);
+                                }
+
                             }
                         }
                     } else {
-                        XLogHelper.decorateElement(xTrace, (String) keysTraceData, (String) JSONObject_TraceWithEvents.get(keysTraceData));
+                        String value = (String) JSONObject_TraceWithEvents.get(keysTraceData);
+                        if (value != null) {
+                            XLogHelper.decorateElement(xTrace, (String) keysTraceData, value);
+                        }
+
                     }
                 }
             }  else {
