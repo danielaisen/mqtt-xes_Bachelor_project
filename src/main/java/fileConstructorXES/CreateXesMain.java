@@ -4,6 +4,7 @@
 
 package fileConstructorXES;
 
+import Helpers.FilesHelper;
 import org.json.simple.JSONObject;
 
 
@@ -14,10 +15,17 @@ public class CreateXesMain {
 
     public static void main(String[] args) throws FileNotFoundException, java.text.ParseException {
         String fileReader = "traceByLineObject";
+        String fileNameXes = "file_XES2";
+
+        if (args.length != 0) {
+            fileReader = args[0];
+            fileNameXes = args[1];
+        }
 
         JSONObject jsonObject = FilesHelper.readJSONObjectFile(fileReader);
 
-        new CreateXES_File("file_XES2", jsonObject);
+
+        new CreateXES_File(fileNameXes, jsonObject);
 
 
     }

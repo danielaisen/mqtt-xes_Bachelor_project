@@ -2,7 +2,7 @@
  * @author Daniel Max Aisen (s171206)
  **/
 
-package temp;
+package Helpers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

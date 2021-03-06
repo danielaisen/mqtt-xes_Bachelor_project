@@ -6,7 +6,7 @@
 //
 //public class Consumer {
 //
-//	public static void main(String[] args) throws Exception {
+//	public static void updateTimeSeries(String[] args) throws Exception {
 //
 //		System.out.print("Preparing client for streaming... ");
 //		XesMqttConsumer client = new XesMqttConsumer("broker.hivemq.com", "pmcep");

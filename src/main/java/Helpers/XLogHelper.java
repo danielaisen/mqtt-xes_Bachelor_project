@@ -2,7 +2,7 @@
  * @author Daniel Max Aisen (s171206)
  **/
 
-package fileConstructorXES;
+package Helpers;
 
 import org.deckfour.xes.extension.XExtensionManager;
 import org.deckfour.xes.extension.std.XConceptExtension;

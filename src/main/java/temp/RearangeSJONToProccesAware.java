@@ -1,6 +1,8 @@
 package temp;
 
-import fileConstructorXES.FilesHelper;
+import Helpers.DateHelper;
+import Helpers.JSONSimpleHelper;
+import Helpers.FilesHelper;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -13,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static requestRespond.specificalApI.TimeSeries_RejsePlanCall.*;
-
 /**
  * @author Daniel Max Aisen (s171206)
  **/
@@ -22,30 +22,34 @@ import static requestRespond.specificalApI.TimeSeries_RejsePlanCall.*;
 public class RearangeSJONToProccesAware {
 
     public static void main(String[] args) throws ParseException {
+        String readFile = "timeSeriesJSON3";
+        String nameFile2 = "traceByLineObject";
+//        JSONArray totallSumationOfAll = new JSONArray();
+        JSONArray finalReadyToXESTracesByLine = new JSONArray();
 
-    JSONArray totallSumationOfAll = new JSONArray();
-    JSONArray finalReadyToXESTracesByLine = new JSONArray();
+        if (args.length ==2) {
+            readFile = args[0];
+            nameFile2 = args[1];
+        }
 
-    JSONArray jsonArrayTimeSeries = FilesHelper.readJSONArrayFile("timeSeriesJSON3");
+        JSONArray jsonArrayTimeSeries = FilesHelper.readJSONArrayFile(readFile);
         for (Object object : jsonArrayTimeSeries) {
             JSONObject V1jsonObjectTimeSeriesOrdered = new JSONObject();
 
             JSONObject objectTimeSeries = (JSONObject) object;
             Date date = DateHelper.getDate(objectTimeSeries.get("time"));
-            Object timeStamp = objectTimeSeries.get("time:timestamp");
             objectTimeSeries.remove("time");
             V1jsonObjectTimeSeriesOrdered.put("time",date);
-            for (Object key : objectTimeSeries.keySet()) {
-                if (key.equals("time:timestamp")) {
-                    continue;
-                }
+            JSONArray rawData = (JSONArray) objectTimeSeries.get("raw_data");
 
-                ArrayList<Object> V1eventAndTraceOrTopic =V1parseRejsePlanReturnStopsAndTraceSimple((JSONObject) objectTimeSeries.get(key));
-                JSONObject event = findRelevatStations((JSONArray) V1eventAndTraceOrTopic.get(0), date);
+            for (Object data : rawData) {
+                ArrayList<Object> eventsAndTraces =V1parseRejsePlanReturnStopsAndTraceSimple((JSONObject) data);
+                JSONObject event = findRelevatStations((JSONArray) eventsAndTraces.get(0), date);
+                Object timeStamp = ((JSONObject) data).get("time:timestamp");
                 event.put("time:timestamp", timeStamp);
-                JSONObject trace = (JSONObject) V1eventAndTraceOrTopic.get(1);
+                JSONObject trace = (JSONObject) eventsAndTraces.get(1);
 
-                V1jsonObjectTimeSeriesOrdered.put(key+"_event0_trace_1", V1eventAndTraceOrTopic);
+//                V1jsonObjectTimeSeriesOrdered.put(key+"_event0_trace_1", eventsAndTraces);
 
                 if (finalReadyToXESTracesByLine.isEmpty()) {
                     JSONArray events = new JSONArray();
@@ -68,17 +72,16 @@ public class RearangeSJONToProccesAware {
 
             }
 
-            totallSumationOfAll.add(V1jsonObjectTimeSeriesOrdered);
+//            totallSumationOfAll.add(V1jsonObjectTimeSeriesOrdered);
         }
-        String nameFile = "traceByLineArray";
-        FilesHelper.createFileToJSONSimple(nameFile, finalReadyToXESTracesByLine);
-        String nameFile2 = "traceByLineObject";
+//        String nameFile = "traceByLineArray";
+//        FilesHelper.createFileToJSONSimple(nameFile, finalReadyToXESTracesByLine);
         JSONObject log = new JSONObject();
         log.put("XES_Type", "log");
         log.put("Traces", finalReadyToXESTracesByLine);
         FilesHelper.createFileToJSONSimple(nameFile2, log);
 
-        System.out.println("done RearangeSJONToProccesAware. Saved as " + nameFile +", and " + nameFile2);
+        System.out.println("done RearangeSJONToProccesAware. Saved as "  + nameFile2);
 
     }
 
@@ -91,7 +94,7 @@ public class RearangeSJONToProccesAware {
 
         for (Object keys : journeyDetail.keySet()) {
             if (keys.equals("Stop")) {
-                org.json.simple.JSONArray stops = (org.json.simple.JSONArray) journeyDetail.get("Stop");
+                org.json.simple.JSONArray stops = (org.json.simple.JSONArray) journeyDetail.get(keys);
                 V1arrangeStopData(stops);
                 objects.add(stops);
                 stopsObject.put("Events", stops);
@@ -99,7 +102,7 @@ public class RearangeSJONToProccesAware {
             else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
             else {
                 Object tempObject = journeyDetail.get(keys);
-                retrieveInformationFromObjectUSINGSIMPLE((String) keys, tempObject, traceInfo);
+                JSONSimpleHelper.retrieveInformationFromObjectUSINGSIMPLE((String) keys, tempObject, traceInfo);
             }
         }
         org.json.simple.JSONObject traceObject = new org.json.simple.JSONObject(traceInfo);
@@ -109,7 +112,7 @@ public class RearangeSJONToProccesAware {
         traceObject.put("arrTime", ((JSONObject) events.get(stopsObject.size())).get("arrTime"));
         traceObject.put("XES_Type", "Trace_Info");
         objects.add(traceObject);
-        objects.add(stopsObject);
+//        objects.add(stopsObject);
         return objects;
     }
 
@@ -153,7 +156,7 @@ public class RearangeSJONToProccesAware {
                     e.printStackTrace();
                 }
             }
-            stop.put("time:timestamp", ""); //todo figure our time stamp in the original file creator
+//            stop.put("time:timestamp", ""); //todo figure our time stamp in the original file creator
             stop.put("Event_Name", "stop");
             stop.put("daysArrivalDiff", daysArrivalDiff);
             stop.put("arrivalDiff", arrivalDiff);
@@ -259,6 +262,7 @@ public class RearangeSJONToProccesAware {
 
     private static int containTraceObjectNumber(JSONArray log, JSONObject trace) {
         int i =0;
+
         for (Object t : log) {
             JSONObject traces = (JSONObject) t;
             if (areTracesEqual(traces, trace)) {
@@ -271,26 +275,49 @@ public class RearangeSJONToProccesAware {
     }
 
     private static boolean areTracesEqual(JSONObject firstObject, JSONObject secondObject) {
+        boolean equal = true;
 
-        boolean equal =  firstObject.get("depTime").equals(secondObject.get("depTime"))
-                && firstObject.get("arrTime").equals(secondObject.get("arrTime"))
-                && firstObject.get("depDate").equals(secondObject.get("depDate"));
+        if ( firstObject.get("depTime") != null && secondObject.get("depTime") != null){
+            equal = firstObject.get("depTime").equals(secondObject.get("depTime"));
+        }else {
+            equal = firstObject.get("depTime") == (secondObject.get("depTime"));
+        }
+        if(!equal){ return false; }
 
-        if (equal && firstObject.get("routeIdxTo") != null && (secondObject.get("routeIdxTo") != null)) {
+        if ( firstObject.get("arrTime") != null && secondObject.get("arrTime") != null){
+            equal = firstObject.get("arrTime").equals(secondObject.get("arrTime"));
+        }else {
+            equal = firstObject.get("arrTime") == (secondObject.get("arrTime"));
+        }
+        if(!equal){ return false; }
+
+        if ( firstObject.get("depDate") != null && secondObject.get("depDate") != null){
+            equal = firstObject.get("depDate").equals(secondObject.get("depDate"));
+        }else {
+            equal = firstObject.get("depDate") == (secondObject.get("depDate"));
+        }
+        if(!equal){ return false; }
+
+        if ( firstObject.get("routeIdxTo") != null && secondObject.get("routeIdxTo") != null){
             equal = firstObject.get("routeIdxTo").equals(secondObject.get("routeIdxTo"));
+        }else {
+            equal = firstObject.get("routeIdxTo") == (secondObject.get("routeIdxTo"));
         }
-        if (equal && firstObject.get("routeIdxFrom") != null && (secondObject.get("routeIdxFrom") != null)) {
+        if(!equal){ return false; }
+
+        if ( firstObject.get("routeIdxFrom") != null && secondObject.get("routeIdxFrom") != null){
             equal = firstObject.get("routeIdxFrom").equals(secondObject.get("routeIdxFrom"));
+        }else {
+            equal = firstObject.get("routeIdxFrom") == (secondObject.get("routeIdxFrom"));
         }
-        if (equal && firstObject.get("line") != null && (secondObject.get("line") != null)) {
+        if(!equal){ return false; }
+
+        if ( firstObject.get("line") != null && secondObject.get("line") != null){
             equal = firstObject.get("line").equals(secondObject.get("line"));
+        }else {
+            equal = firstObject.get("line") == (secondObject.get("line"));
         }
-        if (equal && firstObject.get("name") != null && (secondObject.get("name") != null)) {
-            equal = firstObject.get("name").equals(secondObject.get("name"));
-        }
-        if (equal && firstObject.get("type") != null && (secondObject.get("type") != null)) {
-            equal = firstObject.get("type").equals(secondObject.get("type"));
-        }
+
         return equal;
     }
 }

@@ -5,27 +5,21 @@
 package fileConstructorXES;
 
 
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import Helpers.XLogHelper;
 import org.deckfour.xes.model.XEvent;
 import org.deckfour.xes.model.XLog;
 import org.deckfour.xes.model.XTrace;
-import org.deckfour.xes.model.XVisitor;
 import org.deckfour.xes.out.XesXmlSerializer;
 import org.deckfour.xes.out.XesXmlGZIPSerializer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import temp.DateHelper;
+import Helpers.DateHelper;
 
 
-import javax.json.JsonObject;
-import javax.swing.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.OffsetDateTime;
 import java.util.Date;
 
 public class CreateXES_File {

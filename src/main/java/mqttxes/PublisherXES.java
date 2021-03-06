@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import fileConstructorXES.FilesHelper;
+import Helpers.FilesHelper;
 import mqttxes.lib.UpdatedPublisher;
 //import mqttxes.lib.XesMqttProducer;
 import org.deckfour.xes.extension.std.XConceptExtension;
@@ -25,11 +25,11 @@ import mqttxes.lib.XesMqttEvent;
 
 
 /**
- * This class and its main method publish events that are in the log.
+ * This class and its updateTimeSeries method publish events that are in the log.
  * It is done by an mqtt Hive-MQ library.
  * They are published based on their timestamp.
  *
- * The main method needs the following arguments to initialized:
+ * The updateTimeSeries method needs the following arguments to initialized:
  * [0] XES.GZ file - the log that the program should be running.
  * [1] minutes - the wished interval time for the running the log.
  *
@@ -43,7 +43,8 @@ public class PublisherXES {
 	public static void main(String[] args) throws Exception {
 
 		if (args.length != 2) {
-			System.out.println("Use java -jar mqtt-xes.jar LOG.XES.GZ Minutes");
+//			System.out.println("Use java -jar mqtt-xes.jar LOG.XES.GZ Minutes");
+			System.out.println("Use LogName Minutes");
 			System.exit(1);
 		}
 

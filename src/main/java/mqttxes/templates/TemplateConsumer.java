@@ -6,7 +6,7 @@
 //
 //public class TemplateConsumer {
 //
-//	public static void main(String[] args) throws InterruptedException {
+//	public static void updateTimeSeries(String[] args) throws InterruptedException {
 //
 //		XesMqttConsumer client = new XesMqttConsumer("broker.hivemq.com", "pmcep2");
 //

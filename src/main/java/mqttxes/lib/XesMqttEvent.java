@@ -1,6 +1,5 @@
 package mqttxes.lib;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,7 @@ import org.deckfour.xes.model.XAttributeMap;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import temp.DateHelper;
+import Helpers.DateHelper;
 
 /**
  * Class that represents an event. Objects of this class can be used both to

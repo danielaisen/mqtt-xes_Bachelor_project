@@ -16,7 +16,7 @@
 //
 //public class TemplateProducer {
 //
-//	public static void main(String[] args) throws XesMqttClientNotConnectedException {
+//	public static void updateTimeSeries(String[] args) throws XesMqttClientNotConnectedException {
 //
 //		XesMqttProducer client = new XesMqttProducer("broker.hivemq.com", "xes");
 //		client.connect();

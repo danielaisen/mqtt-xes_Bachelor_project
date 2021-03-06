@@ -211,59 +211,59 @@ public class RequestRespondCall {
         return http;
     }
 
-    static JSONObject getAndWriteLineByLineToTxt(File outPutFile, String urlIn) throws IOException {
-        BufferedReader reader; //todo clean up this method
-        String line;
-        String string = "";
-//        JSONObject jsonObject = new JSONObject();
-        XesMqttEvent event = new XesMqttEvent("me", "trying","my best ");
-//        StringBuffer responseContent = new StringBuffer();
-
-//        URL rejsePlan = new URL( "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=88506%2F39470%2F837494%2F389259%2F86%3Fdate%3D28.01.21%26station_evaId%3D50460%26format%3Djson");
-        URL url = new URL(urlIn);
-
-        BufferedWriter bufferedWriter;
-        //method 1 java.net.HttpURLConnection
-
-        try {
-            bufferedWriter = new BufferedWriter(new FileWriter(outPutFile));
+//    static JSONObject getAndWriteLineByLineToTxt(File outPutFile, String urlIn) throws IOException {
+//        BufferedReader reader; //todo clean up this method
+//        String line;
+//        String string = "";
+////        JSONObject jsonObject = new JSONObject();
+//        XesMqttEvent event = new XesMqttEvent("me", "trying","my best ");
+////        StringBuffer responseContent = new StringBuffer();
 //
-            int lineNumber = 0;
-            int status = setConnection(url);
-
-            if (status > 299) {
-                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                while ((line = reader.readLine()) != null) {
-                    event.addEventAttribute("000" + line.substring(1,4), line); //todo clean up event attributes
-                    string += line;
-                }
-                reader.close();
-            } else {
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                while ((line = reader.readLine()) != null) {
-                    string += line;
-                    event.addEventAttribute( "00000" + lineNumber , line);
-                    bufferedWriter.write(lineNumber);
-                    lineNumber++;
-                }
-                bufferedWriter.write(event.getAttributes());
-                reader.close();
-                bufferedWriter.close();
-            }
-//            System.out.println(responseContent.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            connection.disconnect();
-        }
-        System.out.println("finish writing the data on the file. looking for any Http");
-        List<String> http = returnHTTP(outPutFile);
-//        return http;
-        JSONObject jsonObject = new JSONObject(string);
-        return jsonObject;
-    }
+////        URL rejsePlan = new URL( "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=88506%2F39470%2F837494%2F389259%2F86%3Fdate%3D28.01.21%26station_evaId%3D50460%26format%3Djson");
+//        URL url = new URL(urlIn);
+//
+//        BufferedWriter bufferedWriter;
+//        //method 1 java.net.HttpURLConnection
+//
+//        try {
+//            bufferedWriter = new BufferedWriter(new FileWriter(outPutFile));
+////
+//            int lineNumber = 0;
+//            int status = setConnection(url);
+//
+//            if (status > 299) {
+//                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+//                while ((line = reader.readLine()) != null) {
+//                    event.addEventAttribute("000" + line.substring(1,4), line); //todo clean up event attributes
+//                    string += line;
+//                }
+//                reader.close();
+//            } else {
+//                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//                while ((line = reader.readLine()) != null) {
+//                    string += line;
+//                    event.addEventAttribute( "00000" + lineNumber , line);
+//                    bufferedWriter.write(lineNumber);
+//                    lineNumber++;
+//                }
+//                bufferedWriter.write(event.getAttributes());
+//                reader.close();
+//                bufferedWriter.close();
+//            }
+////            System.out.println(responseContent.toString());
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            connection.disconnect();
+//        }
+//        System.out.println("finish writing the data on the file. looking for any Http");
+//        List<String> http = returnHTTP(outPutFile);
+////        return http;
+//        JSONObject jsonObject = new JSONObject(string);
+//        return jsonObject;
+//    }
 
 
     private static List<String> returnHTTP(File outPutFile) throws IOException {
