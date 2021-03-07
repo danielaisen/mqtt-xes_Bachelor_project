@@ -42,7 +42,7 @@ public class UpdatedPublisher {
 
     }
 
-    public static String containsWildCards(String string) {
+    public static String checkForWildCards(String string) {
         for (int i = 0; i < string.length(); i++) {
             if (string.charAt(i) == '+' ||
                     string.charAt(i) == '#' ||
@@ -101,10 +101,10 @@ public class UpdatedPublisher {
 
     public void send(XesMqttEvent event) {
 //        CompletableFuture<Mqtt5ConnAck> connAckFuture = client.connect();
-        String caseID = containsWildCards(event.getCaseId());
+        String caseID = checkForWildCards(event.getCaseId());
 
-        String processName = containsWildCards(event.getProcessName());
-        String activityName = containsWildCards(event.getActivityName());
+        String processName = checkForWildCards(event.getProcessName());
+        String activityName = checkForWildCards(event.getActivityName());
         client.publishWith().topic( //todo create a check that there are no wild cards in the message about to be sent
                 //todo The same as wild card Never use spaces in a topic OR
                 // leading forward slash

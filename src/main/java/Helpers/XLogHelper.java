@@ -2,10 +2,7 @@
  * @author Daniel Max Aisen (s171206)
  **/
 
-package fileConstructorXES;
-/**
- * @author Daniel Max Aisen (s171206)
- **/
+package Helpers;
 
 import org.deckfour.xes.extension.XExtensionManager;
 import org.deckfour.xes.extension.std.XConceptExtension;
@@ -141,6 +138,8 @@ public class XLogHelper {
         return trace;
     }
 
+
+
     /**
      * This method creates a new {@link XEvent} referring to the given activity
      * name, occurred at the given time. The event is added to the given trace,
@@ -163,6 +162,14 @@ public class XLogHelper {
         trace.insertOrdered(e);
         return e;
     }
+//    public static XEvent insertEvent(XTrace trace, String activityName) {
+//        if (trace == null) {
+//            return null;
+//        }
+//        XEvent e = xesFactory.createEvent();
+//        decorateElement(e, "concept:name", activityName, "Concept");
+//        return e;
+//    }
 
 
     /**
@@ -469,6 +476,11 @@ public class XLogHelper {
         }
         return traceToStream;
     }
+
+//    public static <c> void decorateElement(XEvent xEvent, String attributeName, Object value) {
+//        Class c = value.getClass();
+//        decorateElement(xEvent, attributeName,(c) value);
+//    }
 }
 
 
