@@ -21,7 +21,7 @@ public class TimeSeries_RejsePlanCall {
 
         double totalTime = 0;
         double numberOfStops = 0;
-//        double inValidUrl = 0;
+        int inValidUrl = 0;
 
         for (int index =0; index < urls.size(); index++) {
             String url = urls.get(index);
@@ -29,7 +29,7 @@ public class TimeSeries_RejsePlanCall {
             totalTime = totalTime +timeStopsInvalid[0];
             numberOfStops = numberOfStops + timeStopsInvalid[1];
             if (timeStopsInvalid[2] == 1) {
-//                inValidUrl++ ;
+                inValidUrl++ ;
                 urls.remove(index);
                 index--;
             }
@@ -42,7 +42,7 @@ public class TimeSeries_RejsePlanCall {
 
 
         System.out.printf("Received %d of journey options, out of them %d are valid. %n",
-                 urls.size(), (numberOfValid));
+                (numberOfValid + inValidUrl), (numberOfValid));
         System.out.printf("There will be %d calls, with %d minutes (fixed time) waiting between them. In total this task will take: %d minutes %n"
                 , numberOfCalls, minutesBetweenCalls, (numberOfCalls-1)*minutesBetweenCalls);
         System.out.println("The time now is " + DateHelper.nowShort());
@@ -96,33 +96,38 @@ public class TimeSeries_RejsePlanCall {
     private void checkTimeExistenceAndAdd(org.json.simple.JSONObject requestData, org.json.simple.JSONArray timeSeriesJSON, String timeNow) {
         org.json.simple.JSONObject JSONObjectTimeObject = new org.json.simple.JSONObject();
         org.json.simple.JSONArray JSONArrayDataArray = new org.json.simple.JSONArray();
-        Boolean found = false;
-        while (!found) {
-            for(int i = 0; i < timeSeriesJSON.size(); i++) {
-                if (found = ((org.json.simple.JSONObject) timeSeriesJSON.get(i)).get("time").equals(timeNow)) {
-                    JSONObjectTimeObject = (org.json.simple.JSONObject) timeSeriesJSON.get(i);
-                    JSONArrayDataArray = (org.json.simple.JSONArray) JSONObjectTimeObject.get("raw_data");
+        try  {
+            Boolean found = false;
+            while (!found) {
+                for(int i = 0; i < timeSeriesJSON.size(); i++) {
+                    if (found = ((org.json.simple.JSONObject) timeSeriesJSON.get(i)).get("time").equals(timeNow)) {
+                        JSONObjectTimeObject = (org.json.simple.JSONObject) timeSeriesJSON.get(i);
+                        JSONArrayDataArray = (org.json.simple.JSONArray) JSONObjectTimeObject.get("raw_data");
 
+                        requestData.put("time:timestamp", DateHelper.nowFull());
+                        JSONArrayDataArray.add(requestData);
+
+                        timeSeriesJSON.remove(i);
+                        break;
+                    }
+                }
+                if (!found) {
                     requestData.put("time:timestamp", DateHelper.nowFull());
                     JSONArrayDataArray.add(requestData);
 
-                    timeSeriesJSON.remove(i);
-                    break;
+                    JSONObjectTimeObject.put("time", timeNow);
+                    JSONObjectTimeObject.put("raw_data", JSONArrayDataArray);
                 }
-            }
-            if (!found) {
-                requestData.put("time:timestamp", DateHelper.nowFull());
-                JSONArrayDataArray.add(requestData);
 
-                JSONObjectTimeObject.put("time", timeNow);
-                JSONObjectTimeObject.put("raw_data", JSONArrayDataArray);
+                JSONObjectTimeObject.put("raw_data" , JSONArrayDataArray);
+                break;
             }
 
-            JSONObjectTimeObject.put("raw_data" , JSONArrayDataArray);
-            break;
+            timeSeriesJSON.add(JSONObjectTimeObject);
         }
-
-        timeSeriesJSON.add(JSONObjectTimeObject);
+        catch (NullPointerException e) {
+            return;
+        }
     }
 
     public String requestRespondCall(String url) {

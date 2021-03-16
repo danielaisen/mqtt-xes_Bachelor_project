@@ -82,7 +82,7 @@ public class PublisherXES {
 			Date secondDate = event.getTime();
 			int diffInMillis = time_interval(startDate, secondDate, dividingTime);
 			startDate = secondDate;
-
+			System.out.println(diffInMillis);
 			event.removeEventAttribute("time:timestamp");
 			client.send(Integer.toString(i));//todo do i need this?
 			client.send(event); //todo create an option to separate between different topics

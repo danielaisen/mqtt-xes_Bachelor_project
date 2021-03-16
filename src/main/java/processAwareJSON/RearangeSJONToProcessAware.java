@@ -1,4 +1,4 @@
-package temp;
+package processAwareJSON;
 
 import Helpers.DateHelper;
 import Helpers.JSONSimpleHelper;
@@ -24,7 +24,7 @@ public class RearangeSJONToProcessAware {
     public static void main(String[] args) throws ParseException {
         System.out.println("Making a call to rearranging json to process aware");
 
-        String readFile = "timeSeriesJSON3";
+        String readFile = "timeSeriesJSON";
         String nameFile2 = "traceByLineObject";
 //        JSONArray totallSumationOfAll = new JSONArray();
         JSONArray finalReadyToXESTracesByLine = new JSONArray();
@@ -33,9 +33,11 @@ public class RearangeSJONToProcessAware {
             readFile = args[0];
             nameFile2 = args[1];
         }
+//        int debug =0; int debug2= 0;
 
         JSONArray jsonArrayTimeSeries = FilesHelper.readJSONArrayFile(readFile);
         for (Object object : jsonArrayTimeSeries) {
+//            debug++;System.out.println(debug);
             JSONObject V1jsonObjectTimeSeriesOrdered = new JSONObject();
 
             JSONObject objectTimeSeries = (JSONObject) object;
@@ -45,7 +47,11 @@ public class RearangeSJONToProcessAware {
             JSONArray rawData = (JSONArray) objectTimeSeries.get("raw_data");
 
             for (Object data : rawData) {
-                ArrayList<Object> eventsAndTraces =V1parseRejsePlanReturnStopsAndTraceSimple((JSONObject) data);
+//                debug2++;System.out.println(" " + debug2);
+                ArrayList<Object> eventsAndTraces = parseRejsePlanReturnStopsAndTraceSimple((JSONObject) data);
+                if (eventsAndTraces == null) {
+                    continue;
+                }
                 JSONObject event = findRelevatStations((JSONArray) eventsAndTraces.get(0), date);
                 Object timeStamp = ((JSONObject) data).get("time:timestamp");
                 event.put("time:timestamp", timeStamp);
@@ -89,20 +95,22 @@ public class RearangeSJONToProcessAware {
     }
 
 
-    public static ArrayList<Object> V1parseRejsePlanReturnStopsAndTraceSimple(JSONObject journeyDetail) {
+    public static ArrayList<Object> parseRejsePlanReturnStopsAndTraceSimple(JSONObject journeyDetail) {
         ArrayList<Object> objects = new ArrayList<>();
 
         HashMap<String, String> traceInfo = new HashMap<>();
         org.json.simple.JSONObject stopsObject = new org.json.simple.JSONObject();
 
         for (Object keys : journeyDetail.keySet()) {
-            if (keys.equals("Stop")) {
+            if  (keys.equals("error")) {
+                return null;
+            } else if (keys.equals("Stop")) {
                 org.json.simple.JSONArray stops = (org.json.simple.JSONArray) journeyDetail.get(keys);
-                V1arrangeStopData(stops);
+                arrangeStopData(stops);
                 objects.add(stops);
                 stopsObject.put("Events", stops);
-            }
-            else if (keys.equals("noNamespaceSchemaLocation")){} //delete this object
+            } else if (keys.equals("noNamespaceSchemaLocation")) {
+            } //delete this object
             else {
                 Object tempObject = journeyDetail.get(keys);
                 JSONSimpleHelper.retrieveInformationFromObjectUSINGSIMPLE((String) keys, tempObject, traceInfo);
@@ -121,7 +129,7 @@ public class RearangeSJONToProcessAware {
 
 
 
-    private static void V1arrangeStopData(org.json.simple.JSONArray stops) {
+    private static void arrangeStopData(org.json.simple.JSONArray stops) {
         for (int i = 0; i < stops.size(); i++) {
             org.json.simple.JSONObject stop = (org.json.simple.JSONObject) stops.get(i);
             List<String> stopAttributes = new ArrayList<String>(stop.keySet());
@@ -228,14 +236,14 @@ public class RearangeSJONToProcessAware {
 
                     if (arrTime > time) {
                         event.put("Status_", "On the way");
-
+                        String station = (String) ((JSONObject) stops.get(i)).get("name");
                         long arrivalDiff = Long.valueOf((int)((JSONObject) stops.get(i)).get("arrivalDiff"));
                         if (arrivalDiff == 0) {
-                            event.put("Event_name", "On the way");
+                            event.put("Event_name", "On the way to "+ station);
                         } else if (arrivalDiff > 0) {
-                            event.put("Event_name", "Delayed");
+                            event.put("Event_name", "Delayed to "+ station);
                         } else if (arrivalDiff < 0) {
-                            event.put("Event_name", "Arriving earlier");
+                            event.put("Event_name", "Arriving earlier to "+ station);
                         }
                         event.put("Name_station", ((JSONObject) stops.get(i)).get("name"));
                         event.put("Original_data_stop", stops.get(i));

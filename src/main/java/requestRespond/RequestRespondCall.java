@@ -116,53 +116,53 @@ public class RequestRespondCall {
     }
 
 
-    static List<String> oldMthodCombine12(File outPutFile) throws IOException {
-        BufferedReader reader;
-        String line;
-//        StringBuffer responseContent = new StringBuffer();
-
-//        URL rejsePlan = new URL( "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=88506%2F39470%2F837494%2F389259%2F86%3Fdate%3D28.01.21%26station_evaId%3D50460%26format%3Djson");
-//        URL url = new URL("http://jsonplaceholder.typicode.com/albums");
-        URL rejsePlan = new URL("http://xmlopen.rejseplanen.dk/bin/rest.exe/" +
-                "trip?destId=8600664&originId=6584&useTog=0&useBus=1&useMetro=0&type=json");
-        String wikipendia = "http://.....";
-        BufferedWriter bufferedWriter;
-        //method 1 java.net.HttpURLConnection
-        try {
-            bufferedWriter = new BufferedWriter(new FileWriter(outPutFile));
+//    static List<String> oldMthodCombine12(File outPutFile) throws IOException {
+//        BufferedReader reader;
+//        String line;
+////        StringBuffer responseContent = new StringBuffer();
 //
-            int status = setConnection(rejsePlan);
-
-            if (status > 299) {
-                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-                while ((line = reader.readLine()) != null) {
-//                    responseContent.append(line);
-                    bufferedWriter.write(line);
-                    bufferedWriter.newLine();
-                }
-                reader.close();
-            } else {
-                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-                while ((line = reader.readLine()) != null) {
-//                    responseContent.append(line);
-                    bufferedWriter.write(line);
-                    bufferedWriter.newLine();
-                }
-                reader.close();
-                bufferedWriter.close();
-            }
-//            System.out.println(responseContent.toString());
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            connection.disconnect();
-        }
-        List<String> http = returnHTTP(outPutFile);
-        return http;
-    }
+////        URL rejsePlan = new URL( "http://webapp.rejseplanen.dk/bin//rest.exe/journeyDetail?ref=88506%2F39470%2F837494%2F389259%2F86%3Fdate%3D28.01.21%26station_evaId%3D50460%26format%3Djson");
+////        URL url = new URL("http://jsonplaceholder.typicode.com/albums");
+//        URL rejsePlan = new URL("http://xmlopen.rejseplanen.dk/bin/rest.exe/" +
+//                "trip?destId=8600664&originId=6584&useTog=0&useBus=1&useMetro=0&type=json");
+//        String wikipendia = "http://.....";
+//        BufferedWriter bufferedWriter;
+//        //method 1 java.net.HttpURLConnection
+//        try {
+//            bufferedWriter = new BufferedWriter(new FileWriter(outPutFile));
+////
+//            int status = setConnection(rejsePlan);
+//
+//            if (status > 299) {
+//                reader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+//                while ((line = reader.readLine()) != null) {
+////                    responseContent.append(line);
+//                    bufferedWriter.write(line);
+//                    bufferedWriter.newLine();
+//                }
+//                reader.close();
+//            } else {
+//                reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//
+//                while ((line = reader.readLine()) != null) {
+////                    responseContent.append(line);
+//                    bufferedWriter.write(line);
+//                    bufferedWriter.newLine();
+//                }
+//                reader.close();
+//                bufferedWriter.close();
+//            }
+////            System.out.println(responseContent.toString());
+//        } catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            connection.disconnect();
+//        }
+//        List<String> http = returnHTTP(outPutFile);
+//        return http;
+//    }
 
 
     static List<String> setInTxtAndReturnHttpList(File outPutFile, String urlIn) throws IOException { //todo change to String []
