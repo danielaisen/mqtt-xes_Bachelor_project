@@ -15,7 +15,7 @@ public class main {
 
         if (args.length == 0) {
             System.out.println("no arguments entered. constant values are used instead.");
-            String callsForEachUrl = "4";
+            String callsForEachUrl = "3";
             String limitTheRoutes = "5";
             String howManyCalls = "1";
             String timeSeriesFileName = "timeSeriesJSON";
@@ -28,15 +28,15 @@ public class main {
 
 
         RequestRespondRejsePlanTimeSeries.main(args);
-        Thread.sleep(70000);
+//        Thread.sleep(70000);
 
 
         RearangeSJONToProcessAware.main(new String[]{args[3], args[4]});
-        Thread.sleep(70000);
+//        Thread.sleep(70000);
 
 
         CreateXesMain.main(new String[]{args[4], args[5]});
-        Thread.sleep(70000);
+//        Thread.sleep(70000);
 
 
         PublisherXES.main(new String[]{args[5], args[6]});

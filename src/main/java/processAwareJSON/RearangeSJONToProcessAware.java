@@ -85,7 +85,7 @@ public class RearangeSJONToProcessAware {
 //        String nameFile = "traceByLineArray";
 //        FilesHelper.createFileToJSONSimple(nameFile, finalReadyToXESTracesByLine);
         JSONObject log = new JSONObject();
-        log.put("XES_Type", "log");
+        log.put("XES_Type_", "log");
         log.put("Traces", finalReadyToXESTracesByLine);
         FilesHelper.createFileToJSONSimple(nameFile2, log);
 
@@ -121,7 +121,7 @@ public class RearangeSJONToProcessAware {
         traceObject.put("depTime", ((JSONObject) events.get(0) ).get("depTime"));
         traceObject.put("depDate", ((JSONObject) events.get(0) ).get("depDate"));
         traceObject.put("arrTime", ((JSONObject) events.get(stopsObject.size())).get("arrTime"));
-        traceObject.put("XES_Type", "Trace_Info");
+        traceObject.put("XES_Type_", "Trace_Info");
         objects.add(traceObject);
 //        objects.add(stopsObject);
         return objects;
@@ -140,19 +140,19 @@ public class RearangeSJONToProcessAware {
             for (String attribute : stopAttributes) {
                 try {
                     if (attribute.equals("rtArrDate")) {
-                        daysArrivalDiff = V1clearingDateDaysAttributes(stop, attribute, "arrDate");
+                        daysArrivalDiff = clearingDaysAttributes(stop, attribute, "arrDate");
                         continue;
                     }
                     if (attribute.equals("rtDepDate")) {
-                        daysDepartureDiff = V1clearingDateDaysAttributes( stop, attribute, "depDate");
+                        daysDepartureDiff = clearingDaysAttributes( stop, attribute, "depDate");
                         continue;
                     }
                     if (attribute.equals("rtArrTime")) {
-                        arrivalDiff = V1cleaningMinutesAttribute(stop, attribute, "arrTime");
+                        arrivalDiff = cleaningMinutesAttribute(stop, attribute, "arrTime");
                         continue;
                     }
                     if (attribute.equals("rtDepTime")) {
-                        departureDiff = V1cleaningMinutesAttribute(stop, attribute, "depTime");
+                        departureDiff = cleaningMinutesAttribute(stop, attribute, "depTime");
                         continue;
                     }
                     else if (attribute.equals("arrDate") || attribute.equals("arrTime") || attribute.equals("depTime")) {    //do nothing
@@ -167,16 +167,15 @@ public class RearangeSJONToProcessAware {
                     e.printStackTrace();
                 }
             }
-//            stop.put("time:timestamp", ""); //todo figure our time stamp in the original file creator
-            stop.put("Event_Name", "stop");
-            stop.put("daysArrivalDiff", daysArrivalDiff);
-            stop.put("arrivalDiff", arrivalDiff);
-            stop.put("daysDepartureDiff", daysDepartureDiff);
-            stop.put("departureDiff", departureDiff);
+//            stop.put("Event_Name", "stop");
+            stop.put("daysArrivalDiff_", daysArrivalDiff);
+            stop.put("arrivalDiff_", arrivalDiff);
+            stop.put("daysDepartureDiff_", daysDepartureDiff);
+            stop.put("departureDiff_", departureDiff);
         }
     }
 
-    private static int V1cleaningMinutesAttribute(org.json.simple.JSONObject stop, String attribute, String depTime) throws ParseException {
+    private static int cleaningMinutesAttribute(org.json.simple.JSONObject stop, String attribute, String depTime) throws ParseException {
         int departureDiff;
         Date firstDate = DateHelper.getDateHHMM(stop.get(attribute));
         Date secondDate = DateHelper.getDateHHMM(stop.get(depTime));
@@ -184,7 +183,7 @@ public class RearangeSJONToProcessAware {
         return departureDiff;
     }
 
-    private static int V1clearingDateDaysAttributes( org.json.simple.JSONObject stop, String attribute, String depDate) throws ParseException {
+    private static int clearingDaysAttributes(org.json.simple.JSONObject stop, String attribute, String depDate) throws ParseException {
         int daysDepartureDiff;
         String s = (String) stop.get(attribute);
         Date firstDate = DateHelper.getDateMMDDYYYY(s.substring(0, 6) + "20" + s.substring(6));
@@ -198,7 +197,7 @@ public class RearangeSJONToProcessAware {
     private static JSONObject findRelevatStations(JSONArray stops, Date date) throws ParseException {
 
         JSONObject event = new JSONObject();
-        event.put("XES_Type", "Event");
+        event.put("XES_Type_", "Event");
         long time = DateHelper.getTimeValue(DateHelper.getDateHHMM(date));
         long nextArrTime;
         long lastDep;
@@ -211,24 +210,24 @@ public class RearangeSJONToProcessAware {
                 depTime = DateHelper.getTimeValue(((JSONObject) stops.get(0)).get("depTime"));
                 if (depTime > time) {
                     event.put("Status_", "Did not departure");
-                    event.put("Event_name", "Did not departure");
+                    event.put("Event_name_", "Did not departure");
                     event.put("Name_station",((JSONObject) stops.get(0)).get("name"));
-                    event.put("Original_data_Stop", stops.get(0));
+                    event.put("Data_Stop", stops.get(0));
                     break;
                 }
             } else if ((i == stops.size()-1)) {
                 if (time > DateHelper.getTimeValue(((JSONObject) stops.get(i)).get("arrTime"))){
                     event.put("Status_", "Finish journey");
-                    event.put("Event_name", "Is not on route");
+                    event.put("Event_name_", "Is not on route");
                     event.put("Name_station",((JSONObject) stops.get(stops.size()-1)).get("name"));
-                    event.put("Original_data_Stop", stops.get(stops.size()-1));
+                    event.put("Data_Stop", stops.get(stops.size()-1));
                 }
                 else {
                     String station = (String) ((JSONObject) stops.get(stops.size()-1)).get("name");
                     event.put("Status_", "On the way");
-                    event.put("Event_name", "On the way to "+ station);
+                    event.put("Event_name_", "On the way to "+ station);
                     event.put("Name_station",station );
-                    event.put("Original_data_Stop", stops.get(stops.size()-1));
+                    event.put("Data_Stop", stops.get(stops.size()-1));
                 }
 
 
@@ -250,30 +249,31 @@ public class RearangeSJONToProcessAware {
                         String station = (String) ((JSONObject) stops.get(i)).get("name");
                         long arrivalDiff = Long.valueOf((int)((JSONObject) stops.get(i)).get("arrivalDiff"));
                         if (arrivalDiff == 0) {
-                            event.put("Event_name", "On the way to "+ station);
+                            event.put("Event_name_", "On the way to "+ station);
                         } else if (arrivalDiff > 0) {
-                            event.put("Event_name", "Delayed to "+ station);
+                            event.put("Event_name_", "Delayed to "+ station);
                         } else if (arrivalDiff < 0) {
-                            event.put("Event_name", "Arriving earlier to "+ station);
+                            event.put("Event_name_", "Arriving earlier to "+ station);
                         }
                         event.put("Name_station", ((JSONObject) stops.get(i)).get("name"));
-                        event.put("Original_data_stop", stops.get(i));
+                        event.put("Data_Stop", stops.get(i));
                         break;
                     } else if (time <= depTime) {
-                        event.put("Status_", "At station");
+
                         String station = (String) ((JSONObject) stops.get(i)).get("name");
+                        event.put("Status_", "At station " + station);
                         long arrivalDiff = Long.valueOf((int)((JSONObject) stops.get(i)).get("arrivalDiff"));
                         if (arrivalDiff == 0) {
-                            event.put("Event_name", "On the way to "+ station);
+                            event.put("Event_name_", "On the way to "+ station);
                         } else if (arrivalDiff > 0) {
-                            event.put("Event_name", "Delayed to "+ station);
+                            event.put("Event_name_", "Delayed to "+ station);
 
                         } else if (arrivalDiff < 0) {
-                            event.put("Event_name", "Arriving earlier to "+ station);
+                            event.put("Event_name_", "Arriving earlier to "+ station);
 
                         }
                         event.put("Name_station", ((JSONObject) stops.get(i)).get("name"));
-                        event.put("Original_data_stop", stops.get(i));
+                        event.put("Data_Stop", stops.get(i));
                         break;
                     }
 
