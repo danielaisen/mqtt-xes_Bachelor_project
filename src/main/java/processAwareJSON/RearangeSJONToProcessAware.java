@@ -216,11 +216,22 @@ public class RearangeSJONToProcessAware {
                     event.put("Original_data_Stop", stops.get(0));
                     break;
                 }
-            } else if (i == stops.size() - 1) {
-                event.put("Status_", "Finish journey");
-                event.put("Event_name", "Is not on route");
-                event.put("Name_station",((JSONObject) stops.get(stops.size()-1)).get("name"));
-                event.put("Original_data_Stop", stops.get(stops.size()-1));
+            } else if ((i == stops.size()-1)) {
+                if (time > DateHelper.getTimeValue(((JSONObject) stops.get(i)).get("arrTime"))){
+                    event.put("Status_", "Finish journey");
+                    event.put("Event_name", "Is not on route");
+                    event.put("Name_station",((JSONObject) stops.get(stops.size()-1)).get("name"));
+                    event.put("Original_data_Stop", stops.get(stops.size()-1));
+                }
+                else {
+                    String station = (String) ((JSONObject) stops.get(stops.size()-1)).get("name");
+                    event.put("Status_", "On the way");
+                    event.put("Event_name", "On the way to "+ station);
+                    event.put("Name_station",station );
+                    event.put("Original_data_Stop", stops.get(stops.size()-1));
+                }
+
+
             } else {
                 if (((JSONObject) stops.get(i + 1)).get("arrTime") == null
                     || ((JSONObject) stops.get(i - 1)).get("depTime") == null
@@ -250,14 +261,16 @@ public class RearangeSJONToProcessAware {
                         break;
                     } else if (time <= depTime) {
                         event.put("Status_", "At station");
-
+                        String station = (String) ((JSONObject) stops.get(i)).get("name");
                         long arrivalDiff = Long.valueOf((int)((JSONObject) stops.get(i)).get("arrivalDiff"));
                         if (arrivalDiff == 0) {
-                            event.put("Event_name", "On the way");
+                            event.put("Event_name", "On the way to "+ station);
                         } else if (arrivalDiff > 0) {
-                            event.put("Event_name", "Delayed");
+                            event.put("Event_name", "Delayed to "+ station);
+
                         } else if (arrivalDiff < 0) {
-                            event.put("Event_name", "Arrived earlier");
+                            event.put("Event_name", "Arriving earlier to "+ station);
+
                         }
                         event.put("Name_station", ((JSONObject) stops.get(i)).get("name"));
                         event.put("Original_data_stop", stops.get(i));

@@ -17,18 +17,18 @@ public class main {
             System.out.println("no arguments entered. constant values are used instead.");
             String callsForEachUrl = "4";
             String limitTheRoutes = "5";
-            String howManyCalls = "3";
-            String timeSeriesFileName = "fullRun13";
+            String howManyCalls = "1";
+            String timeSeriesFileName = "timeSeriesJSON";
 
-            String nameFile = "traceByLineObject_13";
-            String nameFileXES = "file_XES_12";
+            String nameFile = "traceByLineObject_14";
+            String nameFileXES = "file_XES_14";
             String logTime = "10";
             args = new String[]{callsForEachUrl, limitTheRoutes, howManyCalls, timeSeriesFileName, nameFile, nameFileXES, logTime};
         }
 
-//
-//        RequestRespondRejsePlanTimeSeries.main(args);
-//        Thread.sleep(70000);
+
+        RequestRespondRejsePlanTimeSeries.main(args);
+        Thread.sleep(70000);
 
 
         RearangeSJONToProcessAware.main(new String[]{args[3], args[4]});
