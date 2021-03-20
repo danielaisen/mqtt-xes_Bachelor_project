@@ -62,33 +62,35 @@ public class PublisherXES {
 
 
 		XTrace firstTrace = traces.get(0);
-		Date startDate = event_handler(logName, firstTrace).getTime();
+		Date firstEventTime = event_handler(logName, firstTrace).getTime();
 		XTrace lastTrace = traces.get(traces.size()-1);
         Date lastDate = event_handler(logName, lastTrace).getTime();
 
         int wishedInterval = Integer.parseInt(args[1]);
-        float dividingTime = wishedTime(wishedInterval, startDate, lastDate);
+        float dividingTime = wishedTime(wishedInterval, firstEventTime, lastDate);
 
 		System.out.print("Streaming... ");
-		UpdatedPublisher client = new UpdatedPublisher("daniel1");
+		UpdatedPublisher client = new UpdatedPublisher("Bachelor_project");
 
 		System.out.printf("start. There will be: %d events \n", traces.size());
 		client.connect();
-		int i = 0 ;
+//		int i = 0 ;
+		Date previousEventTime = firstEventTime;
+		client.send("start");
 		for (XTrace trace : traces) { //todo Figure out why it doesnt send the first element
-			System.out.printf("event number %d is running. %n" ,i); //todo do i need this?
+//			System.out.printf("event number %d is running. %n" ,i); //todo do i need this?
 			XesMqttEvent event = event_handler(logName, trace);
 
-			Date secondDate = event.getTime();
-			int diffInMillis = time_interval(startDate, secondDate, dividingTime);
-			startDate = secondDate;
+			Date currentEventTime = event.getTime();
+			int diffInMillis = time_interval(previousEventTime, currentEventTime, dividingTime);
+			previousEventTime = currentEventTime;
 			System.out.println(diffInMillis);
 			event.removeEventAttribute("time:timestamp");
-			client.send(Integer.toString(i));//todo do i need this?
-			client.send(event); //todo create an option to separate between different topics
+//			client.send(Integer.toString(i));
 			Thread.sleep(diffInMillis);//todo ensure the KeepAlive specification go hand in hand with the sleeping time
+			client.send(event); //todo create an option to separate between different topics
 //			client.connect(); //todo not totally sure if this is needed
-			i++; //todo do i need this?
+//			i++;
 
 		}
 		client.disconnect();

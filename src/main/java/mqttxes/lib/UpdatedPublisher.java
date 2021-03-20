@@ -14,28 +14,18 @@ public class UpdatedPublisher {
 
     private final Mqtt5AsyncClient client;
     private String topicBase;
-//    protected boolean clientIsConnected = false;
-//    protected Mqtt3AsyncClient   client;
-//    Mqtt3Connect connectMessage;
+
 
     public UpdatedPublisher(String topic) { //TODO change server host to the String MAYBE also topic
         topicBase = topic;
         MqttClientBuilder clientBuilder = MqttClient.builder()
 //                .identifier("danielaUser1" + UUID.randomUUID().toString())
-                .identifier("danielaUser1")
+                .identifier("Bachelor_project")
                 .serverHost("broker.hivemq.com")
 //                .serverHost("127.0.0.1")
 
                 .serverPort(1883)
                 ;
-
-//    MqttClientBuilder clientBuilder = MqttClient.builder()
-//            .identifier("daniela" + UUID.randomUUID().toString())
-////                .serverHost("broker.hivemq.com")
-//            .serverHost("127.0.0.1")
-//            .serverPort(1883)
-//            ;
-//.useMqttVersion3()
 
         Mqtt5Client client = clientBuilder.useMqttVersion5().build();
         this.client= client.toAsync();
@@ -46,6 +36,7 @@ public class UpdatedPublisher {
         for (int i = 0; i < string.length(); i++) {
             if (string.charAt(i) == '+' ||
                     string.charAt(i) == '#' ||
+                    string.charAt(i) == '/' ||
                     string.charAt(i) == '$') {
                 System.out.println();
                 System.out.println("found wild Cards!!! ");
@@ -53,6 +44,7 @@ public class UpdatedPublisher {
             }
         }
         string = string.replace("+"," PLUS ");
+        string = string.replace("/"," DASH ");
         string = string.replace("#"," NUMBER-SIGN ");
         string = string.replace("$"," DOLLAR-SIGN ");
         return string;
@@ -69,7 +61,7 @@ public class UpdatedPublisher {
 //                .payload("payload".getBytes())
 //                .contentType("text/plain")
 //                .send();
-
+        client.connect();
         client.publishWith()
                 .topic(topicBase)
                 .contentType("text/plain")
@@ -105,16 +97,17 @@ public class UpdatedPublisher {
 
         String processName = checkForWildCards(event.getProcessName());
         String activityName = checkForWildCards(event.getActivityName());
-        client.publishWith().topic( //todo create a check that there are no wild cards in the message about to be sent
-                //todo The same as wild card Never use spaces in a topic OR
-                // leading forward slash
+        client.publishWith().
+                topic(
                 topicBase + "/" +
                         processName + "/" +
                         caseID + "/" +
                         activityName)
-//                .qos(qos)
+                .contentType("text/plain")
+                .qos(MqttQos.AT_LEAST_ONCE)
                 .payload(event.getAttributes().getBytes())
                 .send();
 
     }
 }
+

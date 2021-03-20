@@ -39,7 +39,7 @@ public class CreateXES_File {
 
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject JSONObject_TraceWithEvents = (JSONObject) jsonArray.get(i);
-            if (JSONObject_TraceWithEvents.get("XES_Type").equals("Trace_Info")) {
+            if (JSONObject_TraceWithEvents.get("XES_Type_").equals("Trace_Info")) {
                 caseID++;
                 XTrace xTrace = XLogHelper.insertTrace(logHelper, "case" + caseID);
                 for (Object keysTraceData : JSONObject_TraceWithEvents.keySet()) {
@@ -50,18 +50,24 @@ public class CreateXES_File {
                             JSONObject jsonObjectEvent = (JSONObject) jsonArrayEvents.get(j);
                             Date timestamp = DateHelper.getDate(jsonObjectEvent.get("time:timestamp"));
 
-                            XEvent xEvent = XLogHelper.insertEvent(xTrace, (String) jsonObjectEvent.get("Event_name"),timestamp);
+                            XEvent xEvent = XLogHelper.insertEvent(xTrace, (String) jsonObjectEvent.get("Event_name_"),timestamp);
                             for (Object attributeName : jsonObjectEvent.keySet()) {
                                 if (attributeName.equals("time:timestamp")) {
                                     continue;
                                 }
                                 String attributeNameString = (String) attributeName;
 
-                                if (attributeNameString.startsWith("Original_data")) {
-                                    //todo create a list for the original data
+                                if (attributeName.equals("Data_Stop_")) {
+                                    JSONObject data_stop = (JSONObject) jsonObjectEvent.get(attributeName);
+                                    for (Object key : data_stop.keySet()) {
+                                        String value = String.valueOf(data_stop.get(key));
+                                        XLogHelper.decorateElement(xEvent, (String) key, value);
+                                    }
+                                    continue;
                                 }
 
-                                if (attributeName.equals("Event_name")) {
+
+                                if (attributeName.equals("Event_name_")) {
                                     continue;
                                 }
                                 String value = String.valueOf(jsonObjectEvent.get(attributeName));

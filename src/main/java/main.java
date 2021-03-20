@@ -21,21 +21,21 @@ public class main {
             String timeSeriesFileName = "timeSeriesJSON";
 
             String nameFile = "traceByLineObject_14";
-            String nameFileXES = "file_XES_14";
-            String logTime = "10";
+            String nameFileXES = "hospital_log";
+            String logTime = "40";
             args = new String[]{callsForEachUrl, limitTheRoutes, howManyCalls, timeSeriesFileName, nameFile, nameFileXES, logTime};
         }
 
 
-        RequestRespondRejsePlanTimeSeries.main(args);
+//        RequestRespondRejsePlanTimeSeries.main(args);
 //        Thread.sleep(70000);
 
 
-        RearangeSJONToProcessAware.main(new String[]{args[3], args[4]});
+//        RearangeSJONToProcessAware.main(new String[]{args[3], args[4]});
 //        Thread.sleep(70000);
 
 
-        CreateXesMain.main(new String[]{args[4], args[5]});
+//        CreateXesMain.main(new String[]{args[4], args[5]});
 //        Thread.sleep(70000);
 
 
