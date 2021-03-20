@@ -27,15 +27,15 @@ public class main {
         }
 
 
-//        RequestRespondRejsePlanTimeSeries.main(args);
+        RequestRespondRejsePlanTimeSeries.main(args);
 //        Thread.sleep(70000);
 
 
-//        RearangeSJONToProcessAware.main(new String[]{args[3], args[4]});
+        RearangeSJONToProcessAware.main(new String[]{args[3], args[4]});
 //        Thread.sleep(70000);
 
 
-//        CreateXesMain.main(new String[]{args[4], args[5]});
+        CreateXesMain.main(new String[]{args[4], args[5]});
 //        Thread.sleep(70000);
 
 

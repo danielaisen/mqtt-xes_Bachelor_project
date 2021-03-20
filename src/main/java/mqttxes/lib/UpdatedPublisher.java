@@ -19,7 +19,6 @@ public class UpdatedPublisher {
     public UpdatedPublisher(String topic) { //TODO change server host to the String MAYBE also topic
         topicBase = topic;
         MqttClientBuilder clientBuilder = MqttClient.builder()
-//                .identifier("danielaUser1" + UUID.randomUUID().toString())
                 .identifier("Bachelor_project")
                 .serverHost("broker.hivemq.com")
 //                .serverHost("127.0.0.1")

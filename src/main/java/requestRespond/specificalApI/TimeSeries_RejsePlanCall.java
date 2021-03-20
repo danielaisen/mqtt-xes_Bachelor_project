@@ -17,7 +17,7 @@ import java.util.*;
 
 public class TimeSeries_RejsePlanCall {
 
-    public void updateTimeSeries(org.json.simple.JSONArray timeSeriesJSONMain, List<String> urls, int numberOfCalls) throws InterruptedException, ParseException, org.json.simple.parser.ParseException {
+    public void updateTimeSeries(org.json.simple.JSONArray timeSeriesJSONMain, List<String> urls, int numberOfCalls, int sleepTime) throws InterruptedException, ParseException, org.json.simple.parser.ParseException {
 
         double totalTime = 0;
         double numberOfStops = 0;
@@ -58,6 +58,7 @@ public class TimeSeries_RejsePlanCall {
                 System.out.printf("sleeping for %d min %n", minutesBetweenCalls);
                 Thread.sleep( minutesBetweenCalls *60 * 1000 );
             }
+            Thread.sleep(sleepTime);
         }
 
     }

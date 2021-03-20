@@ -23,12 +23,14 @@ public class RequestRespondRejsePlanTimeSeries {
         String fileName = "timeSeriesJSON";
         int limitRoutes = 5;
         int howManyCalls = 2;
+        int sleepTime = 10;
 
         if (args.length != 0) {
             callsForEachUrl = Integer.parseInt(args[0]);
             limitRoutes = Integer.parseInt(args[1]);
             howManyCalls = Integer.parseInt(args[2]);
             fileName = args[3];
+            sleepTime = Integer.parseInt(args[4]);
         }
 
         org.json.simple.JSONArray timeSeriesJSONMain = new org.json.simple.JSONArray();
@@ -57,8 +59,8 @@ public class RequestRespondRejsePlanTimeSeries {
                 System.out.println("getting the information from: \n" + url);
             }
 
-            callToRejsePlan.updateTimeSeries(timeSeriesJSONMain,urlList, callsForEachUrl);
-
+            callToRejsePlan.updateTimeSeries(timeSeriesJSONMain,urlList, callsForEachUrl,sleepTime);
+            Thread.sleep(sleepTime);
         }
         FilesHelper.createFileToJSONSimple(fileName, timeSeriesJSONMain);
         System.out.println("Done call to rejsePlan");
