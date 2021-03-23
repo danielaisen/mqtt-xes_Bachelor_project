@@ -43,15 +43,19 @@ public class PublisherXES {
 	public static void main(String[] args) throws Exception {
 		System.out.println("Staring call to publish the log");
 
-		if (args.length != 2) {
-//			System.out.println("Use java -jar mqtt-xes.jar LOG.XES.GZ Minutes");
-			System.out.println("Use LogName Minutes");
-			System.exit(1);
+		String fileName = FilesHelper.addPathXESGZ(args[0]);
+		int wishedInterval = 40;
+
+		String nameFileXES = "file_XES_";
+
+		if (args.length == 2) {
+			fileName = FilesHelper.addPathXESGZ(args[0]);
+			wishedInterval = Integer.parseInt(args[1]);
 		}
 
 		System.out.print("Parsing log... ");
 
-		String fileName = FilesHelper.addPathXESGZ(args[0]);
+
 		XLog log = new XesXmlGZIPParser(factory).parse(new File(fileName)).get(0);
 		List<XTrace> traces = log2events(log);
 
@@ -66,7 +70,7 @@ public class PublisherXES {
 		XTrace lastTrace = traces.get(traces.size()-1);
         Date lastDate = event_handler(logName, lastTrace).getTime();
 
-        int wishedInterval = Integer.parseInt(args[1]);
+
         float dividingTime = wishedTime(wishedInterval, firstEventTime, lastDate);
 
 		System.out.print("Streaming... ");
@@ -76,7 +80,9 @@ public class PublisherXES {
 		client.connect();
 //		int i = 0 ;
 		Date previousEventTime = firstEventTime;
-		client.send("start");
+//		Thread.sleep(10);
+//		client.send("start");
+		Thread.sleep(100);
 		for (XTrace trace : traces) { //todo Figure out why it doesnt send the first element
 //			System.out.printf("event number %d is running. %n" ,i); //todo do i need this?
 			XesMqttEvent event = event_handler(logName, trace);
@@ -84,7 +90,7 @@ public class PublisherXES {
 			Date currentEventTime = event.getTime();
 			int diffInMillis = time_interval(previousEventTime, currentEventTime, dividingTime);
 			previousEventTime = currentEventTime;
-			System.out.println(diffInMillis);
+//			System.out.println(diffInMillis);
 			event.removeEventAttribute("time:timestamp");
 //			client.send(Integer.toString(i));
 			Thread.sleep(diffInMillis);//todo ensure the KeepAlive specification go hand in hand with the sleeping time

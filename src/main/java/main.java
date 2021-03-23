@@ -15,31 +15,35 @@ public class main {
 
         if (args.length == 0) {
             System.out.println("no arguments entered. constant values are used instead.");
-            String callsForEachUrl = "3";
-            String limitTheRoutes = "5";
-            String howManyCalls = "1";
-            String timeSeriesFileName = "timeSeriesJSON";
+            String callsForEachUrl = "5";
+            String limitTheRoutes = "4";
+            String howManyCalls = "2";
+            String sleepTime = "10";
+            String timeSeriesFileName = "timeSeriesJSON2";
 
-            String nameFile = "traceByLineObject_14";
-            String nameFileXES = "hospital_log";
-            String logTime = "40";
-            args = new String[]{callsForEachUrl, limitTheRoutes, howManyCalls, timeSeriesFileName, nameFile, nameFileXES, logTime};
+
+            String nameFile = "traceByLineObject2";
+
+            String nameFileXES = "file_XES";
+
+            String logTime = "5";
+            args = new String[]{callsForEachUrl, limitTheRoutes, howManyCalls, sleepTime, timeSeriesFileName, nameFile, nameFileXES, logTime};
         }
 
 
         RequestRespondRejsePlanTimeSeries.main(args);
-//        Thread.sleep(70000);
+        Thread.sleep(70000);
 
 
-        RearangeSJONToProcessAware.main(new String[]{args[3], args[4]});
-//        Thread.sleep(70000);
+        RearangeSJONToProcessAware.main(new String[]{args[4], args[5]});
+        Thread.sleep(70000);
 
 
-        CreateXesMain.main(new String[]{args[4], args[5]});
-//        Thread.sleep(70000);
+        CreateXesMain.main(new String[]{args[5], args[6]});
+        Thread.sleep(70000);
 
 
-        PublisherXES.main(new String[]{args[5], args[6]});
+        PublisherXES.main(new String[]{args[6], args[7]});
         System.out.println("DONE");
         System.exit(0);
     }

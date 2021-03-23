@@ -29,8 +29,8 @@ public class RequestRespondRejsePlanTimeSeries {
             callsForEachUrl = Integer.parseInt(args[0]);
             limitRoutes = Integer.parseInt(args[1]);
             howManyCalls = Integer.parseInt(args[2]);
-            fileName = args[3];
-            sleepTime = Integer.parseInt(args[4]);
+            sleepTime = Integer.parseInt(args[3]);
+            fileName = args[4];
         }
 
         org.json.simple.JSONArray timeSeriesJSONMain = new org.json.simple.JSONArray();

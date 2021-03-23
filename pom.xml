@@ -34,6 +34,12 @@
 		<!-- https://mvnrepository.com/artifact/org.json/json -->
 
 		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-api</artifactId>
+			<version>5.7.1</version>
+			<scope>test </scope>
+		</dependency>
+		<dependency>
 			<groupId>com.hivemq</groupId>
 			<artifactId>hivemq-mqtt-client</artifactId>
 			<version>1.2.1</version>

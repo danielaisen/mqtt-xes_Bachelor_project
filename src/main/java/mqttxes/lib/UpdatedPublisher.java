@@ -103,7 +103,7 @@ public class UpdatedPublisher {
                         caseID + "/" +
                         activityName)
                 .contentType("text/plain")
-                .qos(MqttQos.AT_LEAST_ONCE)
+                .qos(MqttQos.EXACTLY_ONCE)
                 .payload(event.getAttributes().getBytes())
                 .send();
 
