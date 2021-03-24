@@ -31,8 +31,8 @@ public class main {
         }
 
 
-//        RequestRespondRejsePlanTimeSeries.main(args);
-//        Thread.sleep(70000);
+        RequestRespondRejsePlanTimeSeries.main(args);
+        Thread.sleep(70000);
 
 
         RearangeSJONToProcessAware.main(new String[]{args[4], args[5]});
