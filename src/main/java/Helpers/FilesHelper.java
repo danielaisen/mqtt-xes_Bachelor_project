@@ -28,15 +28,7 @@ public class FilesHelper {
 
     }
 
-    public static void createFileToJSONSimple(String name, JSONObject tripDetails) {
-        Path path = Paths.get("").toAbsolutePath();
-        try (FileWriter file = new FileWriter(path  +"\\testFolder" + "\\" + name + ".json")){
-            file.write(String.valueOf(tripDetails));
-            file.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
     public static void createFileToJSONSimple(String name, org.json.simple.JSONObject tripDetails) {
         Path path = Paths.get("").toAbsolutePath();
         try (FileWriter file = new FileWriter(path  +"\\testFolder" + "\\" + name + ".json")){

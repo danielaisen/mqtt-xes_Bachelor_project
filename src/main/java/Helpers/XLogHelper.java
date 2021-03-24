@@ -1,7 +1,3 @@
-/**
- * @author Daniel Max Aisen (s171206)
- **/
-
 package Helpers;
 
 import org.deckfour.xes.extension.XExtensionManager;

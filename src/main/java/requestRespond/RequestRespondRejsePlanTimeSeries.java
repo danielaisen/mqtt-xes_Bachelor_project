@@ -63,7 +63,7 @@ public class RequestRespondRejsePlanTimeSeries {
             Thread.sleep(sleepTime);
         }
         FilesHelper.createFileToJSONSimple(fileName, timeSeriesJSONMain);
-        System.out.println("Done call to rejsePlan");
+        System.out.println("Done call to Rejseplanen");
 
 //        String wiki =  "https://stream.wikimedia.org/v2/stream/recentchange";
 //        RequestRespondCall.getAndWriteLineByLineToTxt(new FilesHelper("forWiki").file, wiki);

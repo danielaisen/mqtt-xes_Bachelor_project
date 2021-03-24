@@ -22,17 +22,17 @@ public class main {
             String timeSeriesFileName = "timeSeriesJSON2";
 
 
-            String nameFile = "traceByLineObject2";
+            String nameFile = "traceByLineObject3";
 
-            String nameFileXES = "file_XES";
+            String nameFileXES = "file_XES3";
 
             String logTime = "5";
             args = new String[]{callsForEachUrl, limitTheRoutes, howManyCalls, sleepTime, timeSeriesFileName, nameFile, nameFileXES, logTime};
         }
 
 
-        RequestRespondRejsePlanTimeSeries.main(args);
-        Thread.sleep(70000);
+//        RequestRespondRejsePlanTimeSeries.main(args);
+//        Thread.sleep(70000);
 
 
         RearangeSJONToProcessAware.main(new String[]{args[4], args[5]});
