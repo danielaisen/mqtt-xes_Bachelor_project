@@ -20,7 +20,7 @@ public class JSONSimpleHelper {
             else{
                 traceInfo.put((String)keys, (String) original);
             }
-            traceInfo.put((String) keys, (String) original);
+//            traceInfo.put((String) keys, (String) original);
         }
         else if (original instanceof org.json.simple.JSONObject) {
             org.json.simple.JSONObject jsonObject = (org.json.simple.JSONObject) original;
@@ -31,12 +31,13 @@ public class JSONSimpleHelper {
         }
         else if (original instanceof org.json.simple.JSONArray) {
 
-            for (Object object : (org.json.simple.JSONArray) original) {
-                if (!(object instanceof org.json.simple.JSONObject)) {
-                    retrieveInformationFromObjectUSINGSIMPLE(String.valueOf(object.getClass()),object, traceInfo);
+                for (Object object : (org.json.simple.JSONArray) original) {
+                    if (!(object instanceof org.json.simple.JSONObject)) {
+                        retrieveInformationFromObjectUSINGSIMPLE(String.valueOf(object.getClass()),object, traceInfo);
+                        continue;
+                    }
+                    retrieveInformationFromObjectUSINGSIMPLE(null, object, traceInfo);
                 }
-                retrieveInformationFromObjectUSINGSIMPLE(null, object, traceInfo);
-            }
 
         }
         else if (original instanceof ArrayList) {

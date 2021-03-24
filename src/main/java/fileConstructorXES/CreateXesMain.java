@@ -16,8 +16,8 @@ public class CreateXesMain {
     public static void main(String[] args) throws FileNotFoundException, java.text.ParseException {
         System.out.println("Staring with creating of the XES log");
 
-        String fileReader = "traceByLineObject";
-        String fileNameXes = "file_XES2";
+        String fileReader = "traceByLineObject_";
+        String fileNameXes = "file_XES_";
 
         if (args.length != 0) {
             fileReader = args[0];

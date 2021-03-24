@@ -1,60 +1,75 @@
-# MQTT-XES
+# MQTT-XES_Bachelor_project
 
-MQTT-XES is a lightweight library for real-time logging for process mining purposes
+MQTT-XES_Bachelor_project is a lightweight library for creating an intermediate event log form Rejseplanen REST APi and publish on a real-time base to HiveMQ broker. 
+This program can be used for online process mining purposes.
+The structure of the program is based on mqtt-xes project. [mqtt-xes](https://github.com/beamline/mqtt-xes)
+## Using the program
 
-### Using the library
-
-To use the library in your Maven project it is necessary to include, in the `pom.xml` file, the package repository:
-```xml
-<repositories>
-    <repository>
-        <id>beamline</id>
-        <name></name>
-        <url>https://dl.bintray.com/delas/beamline</url>
-    </repository>
-</repositories>
-```
-Then you can include the dependency to the version you are interested, for example:
-```xml
-<dependency>
-    <groupId>beamline</groupId>
-    <artifactId>mqtt-xes</artifactId>
-    <version>0.3.5</version>
-</dependency>
-```
+In order to allow users to fully benefit from the project, some user specification can be set as arguments for the program. It is important to mention that each specification has a default value in order to allow each individual part, as well as the combined program, to run without any input from the user. 
 
 
-### Sending events
 
-To generate events to be sent using MQTT-XES it is possible ot use the following code snippet, first to create the client:
-```java
-XesMqttProducer client = new XesMqttProducer("broker.hivemq.com", "BASE");
-```
-It is also necessary to create the event that has to be sent:
-```java
-XesMqttEvent event = new XesMqttEvent("source-id", "case-id", "activity")
-    .addTraceAttribute("name", "value")
-    .addEventAttribute("name", "value");
-```
-Finally, it is possible to send the event using the client object previously defined:
-```java
-client.connect();
-client.send(event);
-client.disconnect();
-```
+### Collecting the data
 
-### Consuming events
+five variables can be chosen when running this part: the number of calls for each endpoint, the maximum number of endpoints in each call, the number of calls to get new endpoints, The time between each call, and the time series file name.
 
-To consume events, it is first necessary to create a consumer client, using the following code snippet:
-```java
-XesMqttConsumer client = new XesMqttConsumer("broker.hivemq.com", "BASE");
-```
-Once the client is set, it is possible to subscribe to the MQTT-XES events being sent and a callback class need to be provided. Please note that the `accept` method of `XesMqttEventCallback` receives a XesMqttEvent:
-```java
-client.subscribe(new XesMqttEventCallback() {
-    @Override
-    public void accept(XesMqttEvent e) {
-        System.out.println(e.getProcessName() + " - " + e.getCaseId() + " - " + e.getActivityName());
-    }
-});
-```
+    0.Number of endpoints: 
+     this variable allows the user to limit the amount of routes that are
+     pulled each time a call is generated for a new journey. 
+    
+    1. Number of calls for each end point: this is the number of calls that are done
+     to each route. In order to get the full journey, this value needs to equal the 
+     amount of stops, although an an analyst may not know how many stops there are in 
+     a specific journey. In the case this is necessary all the calls are being 
+     saved to files, and the relevant information can be found there.  
+    
+    2. Number of calls to get new endpoints: 
+     The number of iterations in the program can be adjusted. Each iteration starts 
+     when the last one finishes all its calls and a new journey request is created 
+     to Rejseplanen.
+    
+    3. Time between calls: 
+     a waiting time can be set in between the individual calls to the endpoints. 
+     This is set to ensure the events later on are not streamed at the exact same time,
+     and to allows for some flexibility in the time between calls.   
+    
+    4. File name: 
+     This will be the name of the final time series file name. When running all the
+     programs together, it will be the same file name used in the next part.
+     
+###  Creating process aware JSON
+In order to create the JSON file, two variables are needed:
+    
+    1. Time series file name: 
+    is the name of the time series file that is being processed. In case all programs 
+    are running combined, it will be the same file name that has been used in the 
+    Receiving process information.
+    
+    2. JSON process aware file name: 
+    is the name by which the program will save the file. In case all the programs are 
+    running combined, it will be the same file name that is used to create the XES file.
+    
+###  Constructing the XES file
+Again, two file name attributes are needed for this part of the program:
+
+    1. JSON process aware file name: 
+    is the name of the JSON process aware file that is being processed. In case 
+    all programs are running combined, it will be the same filr name as been created. 
+    
+    2. XES.gz file name: 
+    is the name by which the program will save file. In case all the programs are 
+    running combined, it will be the same file name used to publish then events. 
+
+### Publishing the data
+ This part of the program uses two variables:
+ 
+    1. XES.gz file name: 
+    is the name of the log that will be published, which is saved as a compressed 
+    XES file. The file name should include only the name of the file without a file 
+    extension. In case all programs are running combined, it will be the same file 
+    name as been created.
+    
+    2. Preferred log time: 
+    The users can specify the desired time for the streaming of the event log. 
+    The user can input the desired time in minutes. if the time is shortner the dividing
+    varibale will be printed to the consule. 

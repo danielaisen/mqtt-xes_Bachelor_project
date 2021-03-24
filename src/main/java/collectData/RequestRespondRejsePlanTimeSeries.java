@@ -1,9 +1,8 @@
-package requestRespond;
+package collectData;
 
 import Helpers.FilesHelper;
-import requestRespond.specificalApI.TimeSeries_RejsePlanCall;
+import collectData.specificalApI.TimeSeries_RejsePlanCall;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -19,16 +18,18 @@ public class RequestRespondRejsePlanTimeSeries {
 
         System.out.println("making a call to RejsePlan");
 
-        int callsForEachUrl = 1;
-        String fileName = "timeSeriesJSON3";
-        int limitRoutes = 4;
-        int howManyCalls = 1;
+        int callsForEachUrl = 4;
+        String fileName = "timeSeriesJSON";
+        int limitRoutes = 5;
+        int howManyCalls = 2;
+        int sleepTime = 10;
 
         if (args.length != 0) {
             callsForEachUrl = Integer.parseInt(args[0]);
             limitRoutes = Integer.parseInt(args[1]);
             howManyCalls = Integer.parseInt(args[2]);
-            fileName = args[3];
+            sleepTime = Integer.parseInt(args[3]);
+            fileName = args[4];
         }
 
         org.json.simple.JSONArray timeSeriesJSONMain = new org.json.simple.JSONArray();
@@ -37,11 +38,12 @@ public class RequestRespondRejsePlanTimeSeries {
         for (int i = 0; i < howManyCalls; i++) {
             String rejsePlan = "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?id=8600626&format=json";
 
-            String name1= "callForFindingRouts";
+            String name1= "callForFindingRouts_" + i;
             FilesHelper file1 = new FilesHelper(name1);
 
             List<String> urlList =  RequestRespondCall.setInTxtAndReturnHttpList(file1.file, rejsePlan);
-            urlList.remove(0); urlList.remove(0);
+            urlList.remove(0);
+//            urlList.remove(0);
 
 
     //        String[] urls = urlList.toArray(new String[0]);
@@ -56,12 +58,11 @@ public class RequestRespondRejsePlanTimeSeries {
                 System.out.println("getting the information from: \n" + url);
             }
 
-            callToRejsePlan.updateTimeSeries(timeSeriesJSONMain,urlList, callsForEachUrl);
-
-            FilesHelper.createFileToJSONSimple(fileName, timeSeriesJSONMain);
+            callToRejsePlan.updateTimeSeries(timeSeriesJSONMain,urlList, callsForEachUrl,sleepTime);
+            Thread.sleep(sleepTime);
         }
-
-        System.out.println("Done call to rejsePlan");
+        FilesHelper.createFileToJSONSimple(fileName, timeSeriesJSONMain);
+        System.out.println("Done call to Rejseplanen");
 
 //        String wiki =  "https://stream.wikimedia.org/v2/stream/recentchange";
 //        RequestRespondCall.getAndWriteLineByLineToTxt(new FilesHelper("forWiki").file, wiki);
