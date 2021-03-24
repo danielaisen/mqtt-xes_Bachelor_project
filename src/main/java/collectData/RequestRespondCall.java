@@ -1,13 +1,8 @@
-package requestRespond;
+package collectData;
 
-import mqttxes.lib.XesMqttEvent;
 import org.deckfour.xes.factory.XFactory;
 import org.deckfour.xes.factory.XFactoryNaiveImpl;
-import org.deckfour.xes.model.XAttribute;
 import org.deckfour.xes.model.XAttributeMap;
-import org.deckfour.xes.model.XTrace;
-import org.deckfour.xes.model.impl.XTraceImpl;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -15,8 +10,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.nio.file.Files.setAttribute;
 
 /**
  * @author Daniel Max Aisen (s171206)

@@ -2,7 +2,7 @@
  * @author Daniel Max Aisen (s171206)
  **/
 
-package requestRespond.specificalApI;
+package collectData.specificalApI;
 
 //import org.json.JSONArray;
 import Helpers.JSONSimpleHelper;

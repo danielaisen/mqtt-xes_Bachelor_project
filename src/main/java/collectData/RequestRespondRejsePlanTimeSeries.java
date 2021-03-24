@@ -1,9 +1,8 @@
-package requestRespond;
+package collectData;
 
 import Helpers.FilesHelper;
-import requestRespond.specificalApI.TimeSeries_RejsePlanCall;
+import collectData.specificalApI.TimeSeries_RejsePlanCall;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**

@@ -1,7 +1,7 @@
 import fileConstructorXES.CreateXesMain;
 import mqttxes.PublisherXES;
-import requestRespond.RequestRespondRejsePlanTimeSeries;
-import processAwareJSON.RearangeSJONToProcessAware;
+import collectData.RequestRespondRejsePlanTimeSeries;
+import processAware.RearangeSJONToProcessAware;
 
 /**
  * @author Daniel Max Aisen (s171206)

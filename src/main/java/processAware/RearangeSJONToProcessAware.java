@@ -1,4 +1,4 @@
-package processAwareJSON;
+package processAware;
 
 import Helpers.DateHelper;
 import Helpers.JSONSimpleHelper;
